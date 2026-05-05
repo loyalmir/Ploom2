@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JTI 플룸 현장 매뉴얼</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap');
+  :root {
+    --dark: #111318; --card: #1c1f26; --card2: #22262f; --border: #2e3340;
+    --accent: #4f8ef7; --accent2: #f7a94f; --green: #3ecf8e; --red: #f75d5d;
+    --text: #eef0f5; --muted: #7c8394; --soft: #a8b0c0;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Noto Sans KR', sans-serif; background: var(--dark); color: var(--text); min-height: 100vh; padding-bottom: 60px; }
+  .header { background: linear-gradient(135deg, #0f1623 0%, #1a2035 100%); padding: 36px 24px 28px; border-bottom: 1px solid var(--border); position: relative; overflow: hidden; }
+  .header::after { content: ''; position: absolute; bottom: -60px; right: -60px; width: 200px; height: 200px; background: radial-gradient(circle, rgba(79,142,247,0.15) 0%, transparent 70%); pointer-events: none; }
+  .brand-tag { display: inline-flex; align-items: center; gap: 6px; background: rgba(79,142,247,0.15); border: 1px solid rgba(79,142,247,0.3); color: var(--accent); font-size: 11px; font-weight: 700; letter-spacing: 1.5px; padding: 5px 12px; border-radius: 20px; margin-bottom: 14px; text-transform: uppercase; }
+  .header h1 { font-size: 24px; font-weight: 900; letter-spacing: -0.5px; line-height: 1.3; color: var(--text); }
+  .header h1 span { color: var(--accent); }
+  .header p { margin-top: 8px; font-size: 13px; color: var(--muted); font-weight: 400; }
+  .tab-nav { display: flex; background: var(--card); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100; }
+  .tab-btn { flex: 1; padding: 14px 8px; font-size: 13px; font-weight: 700; font-family: 'Noto Sans KR', sans-serif; color: var(--muted); background: none; border: none; border-bottom: 2px solid transparent; cursor: pointer; transition: all 0.2s; letter-spacing: -0.3px; }
+  .tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
+  .main { padding: 20px 16px; max-width: 640px; margin: 0 auto; }
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+  .flow { display: flex; flex-direction: column; gap: 0; margin-bottom: 8px; }
+  .flow-item { display: flex; gap: 16px; align-items: flex-start; padding: 16px 0; position: relative; }
+  .flow-item:not(:last-child)::after { content: ''; position: absolute; left: 17px; top: 44px; bottom: 0; width: 2px; background: var(--border); }
+  .flow-dot { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 900; flex-shrink: 0; position: relative; z-index: 1; }
+  .flow-dot.d0 { background: rgba(247,169,79,0.2); color: var(--accent2); border: 2px solid var(--accent2); }
+  .flow-dot.d1 { background: rgba(79,142,247,0.2); color: var(--accent); border: 2px solid var(--accent); }
+  .flow-dot.d2 { background: rgba(62,207,142,0.2); color: var(--green); border: 2px solid var(--green); }
+  .flow-text { padding-top: 6px; }
+  .flow-day { font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 4px; }
+  .flow-day.day1 { color: var(--accent2); }
+  .flow-day.day2 { color: var(--green); }
+  .flow-title { font-size: 15px; font-weight: 700; color: var(--text); line-height: 1.4; }
+  .flow-sub { font-size: 12px; color: var(--muted); margin-top: 3px; }
+  .section-title { font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); margin: 28px 0 12px; display: flex; align-items: center; gap: 8px; }
+  .section-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+  .step-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; margin-bottom: 10px; overflow: hidden; }
+  .step-header { display: flex; align-items: center; gap: 12px; padding: 15px 16px; cursor: pointer; user-select: none; transition: background 0.15s; }
+  .step-header:hover { background: rgba(255,255,255,0.03); }
+  .step-num { width: 30px; height: 30px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 900; flex-shrink: 0; }
+  .num-blue { background: rgba(79,142,247,0.2); color: var(--accent); }
+  .num-orange { background: rgba(247,169,79,0.2); color: var(--accent2); }
+  .num-green { background: rgba(62,207,142,0.2); color: var(--green); }
+  .step-info { flex: 1; }
+  .step-name { font-size: 14px; font-weight: 700; color: var(--text); }
+  .step-desc { font-size: 11px; color: var(--muted); margin-top: 2px; }
+  .step-arrow { color: var(--muted); font-size: 14px; transition: transform 0.2s; }
+  .step-card.open .step-arrow { transform: rotate(180deg); }
+  .step-body { display: none; padding: 0 16px 16px; border-top: 1px solid var(--border); }
+  .step-card.open .step-body { display: block; padding-top: 14px; }
+  .script { background: var(--card2); border-left: 3px solid var(--accent); border-radius: 0 8px 8px 0; padding: 14px 16px; margin-top: 10px; font-size: 13.5px; line-height: 1.9; color: var(--soft); }
+  .script.orange { border-left-color: var(--accent2); }
+  .script.green { border-left-color: var(--green); }
+  .script-label { font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 8px; display: block; }
+  .lbl-blue { color: var(--accent); }
+  .lbl-orange { color: var(--accent2); }
+  .lbl-green { color: var(--green); }
+  .rispi-box { background: rgba(62,207,142,0.06); border: 1px solid rgba(62,207,142,0.2); border-radius: 10px; padding: 14px 16px; margin-top: 10px; }
+  .rispi-title { font-size: 11px; font-weight: 700; letter-spacing: 1.5px; color: var(--green); text-transform: uppercase; margin-bottom: 8px; }
+  .rispi-box p { font-size: 13.5px; line-height: 1.9; color: var(--soft); }
+  .alert { display: flex; gap: 10px; padding: 12px 14px; border-radius: 8px; font-size: 13px; line-height: 1.6; margin-top: 12px; color: var(--soft); }
+  .alert.warn { background: rgba(247,169,79,0.08); border: 1px solid rgba(247,169,79,0.2); }
+  .alert.info { background: rgba(79,142,247,0.08); border: 1px solid rgba(79,142,247,0.2); }
+  .alert-icon { flex-shrink: 0; font-size: 15px; }
+  .compare { background: var(--card); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; margin-top: 8px; }
+  .compare-row { display: grid; grid-template-columns: 1fr 1fr 1fr; border-bottom: 1px solid var(--border); }
+  .compare-row:last-child { border-bottom: none; }
+  .compare-cell { padding: 12px 14px; font-size: 13px; color: var(--soft); border-right: 1px solid var(--border); }
+  .compare-cell:last-child { border-right: none; }
+  .compare-cell.header { font-size: 11px; font-weight: 700; color: var(--muted); letter-spacing: 0.5px; background: rgba(255,255,255,0.02); }
+  .compare-cell.label { font-weight: 600; color: var(--text); font-size: 12px; }
+  .diff-tag { display: inline-block; font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 4px; }
+  .diff-yes { background: rgba(62,207,142,0.15); color: var(--green); }
+  .diff-no { background: rgba(247,93,93,0.15); color: var(--red); }
+</style>
+</head>
+<body>
+<div class="header">
+  <div class="brand-tag">📋 현장 매뉴얼</div>
+  <h1>JTI <span>플룸 · 뫼비우스</span><br>방문 가이드</h1>
+  <p>순서대로 따라가면 누구나 OK</p>
+</div>
+<div class="tab-nav">
+  <button class="tab-btn active" onclick="showTab('flow',this)">전체 흐름</button>
+  <button class="tab-btn" onclick="showTab('store',this)">점포</button>
+  <button class="tab-btn" onclick="showTab('smoking',this)">흡연구역</button>
+  <button class="tab-btn" onclick="showTab('diff',this)">차이점</button>
+</div>
+<div class="main">
+  <div class="tab-content active" id="tab-flow">
+    <div class="section-title">DAY 1 — 사전 방문일</div>
+    <div class="flow">
+      <div class="flow-item">
+        <div class="flow-dot d0">0</div>
+        <div class="flow-text">
+          <div class="flow-day day1">Day 1 · 도착 직후</div>
+          <div class="flow-title">흡연구역 위치 파악 + 부스 자리 확인</div>
+          <div class="flow-sub">매장 들어가기 전, 눈으로 먼저 각 잡기</div>
+        </div>
+      </div>
+      <div class="flow-item">
+        <div class="flow-dot d1">1</div>
+        <div class="flow-text">
+          <div class="flow-day day1">Day 1 · 매장 진입</div>
+          <div class="flow-title">점주 또는 직원에게 다음날 행사 사전 안내</div>
+          <div class="flow-sub">점포는 리스피 안내 포함 / 흡연구역은 행사 안내만</div>
+        </div>
+      </div>
+    </div>
+    <div class="section-title">DAY 2 — 행사 당일</div>
+    <div class="flow">
+      <div class="flow-item">
+        <div class="flow-dot d2">2</div>
+        <div class="flow-text">
+          <div class="flow-day day2">Day 2 · 행사 당일</div>
+          <div class="flow-title">부스 설치 → 5~10분 홍보 → 철거 후 이동</div>
+          <div class="flow-sub">다음 스팟으로 이동 후 반복</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="tab-content" id="tab-store">
+    <div class="alert info" style="margin-bottom:4px;"><div class="alert-icon">ℹ️</div><div>점포는 <strong>행사 안내 + 리스피 안내</strong>를 함께 진행합니다.</div></div>
+    <div class="section-title">멘트 흐름</div>
+    <div class="step-card open" id="s1"><div class="step-header" onclick="toggle('s1')"><div class="step-num num-blue">①</div><div class="step-info"><div class="step-name">카운터 첫 접근</div><div class="step-desc">매장 진입 후 가장 먼저</div></div><div class="step-arrow">⌄</div></div><div class="step-body"><div class="script"><span class="script-label lbl-blue">🗣 멘트</span>"JTI 플룸에서 나왔습니다. 혹시 점주님 되실까요?"</div></div></div>
+    <div class="step-card" id="s2"><div class="step-header" onclick="toggle('s2')"><div class="step-num num-blue">②</div><div class="step-info"><div class="step-name">점주 직접 만났을 때</div><div class="step-desc">행사 안내 + 리스피 안내 함께</div></div><div class="step-arrow">⌄</div></div><div class="step-body"><div class="script"><span class="script-label lbl-blue">🗣 행사 안내</span>"안녕하세요, JTI 플룸 이벤트 팀입니다.<br>내일 신제품 홍보를 위해 매장 앞에 작은 부스 잠깐 설치하고 홍보 진행하려 하는데, 괜찮으실까요?"</div><div class="rispi-box"><div class="rispi-title">💳 리스피 안내 (점주에게만)</div><p>"참고로 점주님께는 3만원 상당의 리스피 쿠폰을 드리고 있어요.<br>카카오 메시지로 발송되고요, 1달 이내에 메시지 오실 거예요.<br>메시지 오시면 본인인증 후 발급 가능하세요."</p></div></div></div>
+    <div class="step-card" id="s3"><div class="step-header" onclick="toggle('s3')"><div class="step-num num-orange">③</div><div class="step-info"><div class="step-name">점주 없고 직원만 있을 때</div><div class="step-desc">번호 받아 직접 전화</div></div><div class="step-arrow">⌄</div></div><div class="step-body"><div class="script orange"><span class="script-label lbl-orange">🗣 직원에게</span>"혹시 점주님과 연락할 방법이 있을까요?"</div><div class="alert warn"><div class="alert-icon">→</div><div>번호 받은 뒤 바로 전화 시도 (④번으로 이동)</div></div></div></div>
+    <div class="step-card" id="s4"><div class="step-header" onclick="toggle('s4')"><div class="step-num num-blue">④</div><div class="step-info"><div class="step-name">점주 전화 받았을 때</div><div class="step-desc">행사 안내 + 리스피 안내 함께</div></div><div class="step-arrow">⌄</div></div><div class="step-body"><div class="script"><span class="script-label lbl-blue">📞 전화 멘트</span>"안녕하세요, JTI 플룸 이벤트 팀입니다.<br>내일 매장 앞에 작게 부스 설치해서 홍보 활동 진행 후 이동하려 하는데 안내차 연락드렸습니다.<br>직원분께는 말씀드려 놓았고, 방문했을 때 안 계셔서 연락드렸습니다."</div><div class="rispi-box"><div class="rispi-title">💳 리스피 안내 (점주에게만)</div><p>"참고로 점주님께는 3만원 상당의 리스피 쿠폰을 드리고 있어요.<br>카카오 메시지로 발송되고요, 1달 이내에 메시지 오실 거예요.<br>메시지 오시면 본인인증 후 발급 가능하세요."</p></div></div></div>
+    <div class="step-card" id="s5"><div class="step-header" onclick="toggle('s5')"><div class="step-num num-orange">⑤</div><div class="step-info"><div class="step-name">점주 전화 안 받았을 때</div><div class="step-desc">직원에게 재안내 후 마무리</div></div><div class="step-arrow">⌄</div></div><div class="step-body"><div class="script orange"><span class="script-label lbl-orange">🗣 직원에게 재안내</span>"JTI 플룸 뫼비우스에서 나왔는데요,<br>점주님께 전화드렸는데 안 받으셔서요.<br>내일 매장 앞에 테이블 하나 놓고 잠깐 홍보 활동할 예정인데 안내드리러 왔어요.<br>점주님께 꼭 전달 부탁드리고, 저도 통화 되는 대로 다시 확인 연락드리겠습니다.<br>감사합니다."</div></div></div>
+    <div class="step-card" id="s6"><div class="step-header" onclick="toggle('s6')"><div class="step-num num-green">⑥</div><div class="step-info"><div class="step-name">마지막 체크 — 재고 확인</div><div class="step-desc">나가기 전 꼭 확인</div></div><div class="step-arrow">⌄</div></div><div class="step-body"><div class="script green"><span class="script-label lbl-green">🗣 재고 확인</span>"혹시 플룸 디바이스 재고 있으신가요?"</div></div></div>
+  </div>
+  <div class="tab-content" id="tab-smoking">
+    <div class="alert warn" style="margin-bottom:4px;"><div class="alert-icon">⚠️</div><div>흡연구역은 <strong>행사 안내만</strong> 진행합니다. 리스피 안내 없음.</div></div>
+    <div class="section-title">멘트 흐름</div>
+    <div class="step-card open" id="m1"><div class="step-header" onclick="toggle('m1')"><div class="step-num num-blue">①</div><div class="step-info"><div class="step-name">카운터 첫 접근</div><div class="step-desc">매장 진입 후 가장 먼저</div></div><div class="step-arrow">⌄</div></div><div class="step-body"><div class="script"><span class="script-label lbl-blue">🗣 멘트</span>"JTI 플룸에서 나왔습니다. 혹시 점주님 되실까요?"</div></div></div>
+    <div class="step-card" id="m2"><div class="step-header" onclick="toggle('m2')"><div class="step-num num-blue">②</div><div class="step-info"><div class="step-name">점주 직접 만났을 때</div><div class="step-desc">행사 안내만 진행</div></div><div class="step-arrow">⌄</div></div><div class="step-body"><div class="script"><span class="script-label lbl-blue">🗣 행사 안내</span>"안녕하세요, JTI 플룸 이벤트 팀입니다.<br>내일 신제품 홍보를 위해 매장 앞에 작은 부스 잠깐 설치하고 홍보 진행하려 하는데, 괜찮으실까요?"</div></div></div>
+    <div class="step-card" id="m3"><div class="step-header" onclick="toggle('m3')"><div class="step-num num-orange">③</div><div class="step-info"><div class="step-name">점주 없고 직원만 있을 때</div><div class="step-desc">번호 받아 직접 전화</div></div><div class="step-arrow">⌄</div></div><div class="step-body"><div class="script orange"><span class="script-label lbl-orange">🗣 직원에게</span>"혹시 점주님과 연락할 방법이 있을까요?"</div><div class="alert warn"><div class="alert-icon">→</div><div>번호 받은 뒤 바로 전화 시도 (④번으로 이동)</div></div></div></div>
+    <div class="step-card" id="m4"><div class="step-header" onclick="toggle('m4')"><div class="step-num num-blue">④</div><div class="step-info"><div class="step-name">점주 전화 받았을 때</div><div class="step-desc">행사 안내만 진행</div></div><div class="step-arrow">⌄</div></div><div class="step-body"><div class="script"><span class="script-label lbl-blue">📞 전화 멘트</span>"안녕하세요, JTI 플룸 이벤트 팀입니다.<br>내일 매장 앞에 작게 부스 설치해서 홍보 활동 진행 후 이동하려 하는데 안내차 연락드렸습니다.<br>직원분께는 말씀드려 놓았고, 방문했을 때 안 계셔서 연락드렸습니다."</div></div></div>
+    <div class="step-card" id="m5"><div class="step-header" onclick="toggle('m5')"><div class="step-num num-orange">⑤</div><div class="step-info"><div class="step-name">점주 전화 안 받았을 때</div><div class="step-desc">직원에게 재안내 후 마무리</div></div><div class="step-arrow">⌄</div></div><div class="step-body"><div class="script orange"><span class="script-label lbl-orange">🗣 직원에게 재안내</span>"JTI 플룸 뫼비우스에서 나왔는데요,<br>점주님께 전화드렸는데 안 받으셔서요.<br>내일 매장 앞에 테이블 하나 놓고 잠깐 홍보 활동할 예정인데 안내드리러 왔어요.<br>점주님께 꼭 전달 부탁드리고, 저도 통화 되는 대로 다시 확인 연락드리겠습니다.<br>감사합니다."</div></div></div>
+    <div class="step-card" id="m6"><div class="step-header" onclick="toggle('m6')"><div class="step-num num-green">⑥</div><div class="step-info"><div class="step-name">마지막 체크 — 재고 확인</div><div class="step-desc">나가기 전 꼭 확인</div></div><div class="step-arrow">⌄</div></div><div class="step-body"><div class="script green"><span class="script-label lbl-green">🗣 재고 확인</span>"혹시 플룸 디바이스 재고 있으신가요?"</div></div></div>
+  </div>
+  <div class="tab-content" id="tab-diff">
+    <div class="section-title">점포 vs 흡연구역 한눈에 보기</div>
+    <div class="compare">
+      <div class="compare-row"><div class="compare-cell header">항목</div><div class="compare-cell header">점포</div><div class="compare-cell header">흡연구역</div></div>
+      <div class="compare-row"><div class="compare-cell label">행사 안내</div><div class="compare-cell"><span class="diff-tag diff-yes">✓ 있음</span></div><div class="compare-cell"><span class="diff-tag diff-yes">✓ 있음</span></div></div>
+      <div class="compare-row"><div class="compare-cell label">리스피 안내</div><div class="compare-cell"><span class="diff-tag diff-yes">✓ 있음</span></div><div class="compare-cell"><span class="diff-tag diff-no">✗ 없음</span></div></div>
+      <div class="compare-row"><div class="compare-cell label">재고 확인</div><div class="compare-cell"><span class="diff-tag diff-yes">✓ 있음</span></div><div class="compare-cell"><span class="diff-tag diff-yes">✓ 있음</span></div></div>
+    </div>
+    <div class="section-title">리스피 안내 요약</div>
+    <div class="rispi-box">
+      <div class="rispi-title">💳 리스피 쿠폰 안내 (점포 점주에게만)</div>
+      <p>· 금액: <strong style="color:var(--text);">3만원 상당</strong> 리스피 쿠폰<br>· 발송: 카카오 메시지로 발송<br>· 시기: 1달 이내 수신<br>· 발급: 메시지 수신 후 본인인증으로 발급 가능</p>
+    </div>
+  </div>
+</div>
+<script>
+  function showTab(name, btn) {
+    document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+    document.getElementById('tab-' + name).classList.add('active');
+    btn.classList.add('active');
+  }
+  function toggle(id) {
+    document.getElementById(id).classList.toggle('open');
+  }
+</script>
+</body>
+</html>
