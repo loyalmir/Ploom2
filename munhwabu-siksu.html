@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>문화부 집회 주간 식수 인원 파악</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap');
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #f5f0e8;
+    --surface: #fffdf7;
+    --border: #d6c9a8;
+    --accent: #c8783a;
+    --accent-light: #f0dcc0;
+    --text: #2c2416;
+    --text-sub: #7a6a50;
+    --male: #dbe8f5;
+    --female: #fde8e8;
+    --male-header: #b8d0e8;
+    --female-header: #f5c8c8;
+    --check: #c8783a;
+    --row-hover: rgba(200,120,58,0.07);
+    --intro: #e8e0d0;
+  }
+
+  body {
+    font-family: 'Noto Sans KR', sans-serif;
+    background: var(--bg);
+    min-height: 100vh;
+    padding: 24px 16px 60px;
+    color: var(--text);
+  }
+
+  h1 {
+    text-align: center;
+    font-size: 1.25rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin-bottom: 20px;
+    color: var(--text);
+  }
+
+  /* 요일별 합계 카드 */
+  .summary-bar {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+  }
+  .summary-card {
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    padding: 8px 16px;
+    text-align: center;
+    min-width: 60px;
+  }
+  .summary-card .day-label {
+    font-size: 0.7rem;
+    color: var(--text-sub);
+    margin-bottom: 2px;
+  }
+  .summary-card .day-count {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--accent);
+  }
+
+  /* 테이블 래퍼 */
+  .table-section {
+    background: var(--surface);
+    border-radius: 14px;
+    border: 1.5px solid var(--border);
+    overflow: hidden;
+    margin-bottom: 16px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  }
+
+  .section-header {
+    padding: 10px 16px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    color: var(--text-sub);
+  }
+  .section-header.male { background: var(--male-header); }
+  .section-header.female { background: var(--female-header); }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  thead th {
+    padding: 8px 4px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--text-sub);
+    border-bottom: 1.5px solid var(--border);
+    text-align: center;
+  }
+  thead th.name-col { text-align: left; padding-left: 14px; width: 90px; }
+
+  tbody tr {
+    border-bottom: 1px solid #ede6d6;
+    transition: background 0.15s;
+  }
+  tbody tr:last-child { border-bottom: none; }
+  tbody tr:hover { background: var(--row-hover); }
+  tbody tr.intro-row td.name-cell {
+    color: var(--text-sub);
+    font-size: 0.78rem;
+    padding-left: 22px;
+  }
+
+  td {
+    padding: 9px 4px;
+    text-align: center;
+    font-size: 0.82rem;
+  }
+  td.name-cell {
+    text-align: left;
+    padding-left: 14px;
+    font-weight: 500;
+    white-space: nowrap;
+  }
+
+  /* 체크 버튼 */
+  .check-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    border: 1.5px solid var(--border);
+    background: transparent;
+    cursor: pointer;
+    font-size: 1rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s;
+    color: transparent;
+  }
+  .check-btn.checked {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: white;
+  }
+  .check-btn:active { transform: scale(0.92); }
+
+  /* 이름 추가/삭제 */
+  .row-actions {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .delete-btn {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    border: none;
+    background: #f0c0c0;
+    color: #a03030;
+    font-size: 0.75rem;
+    cursor: pointer;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: background 0.15s;
+  }
+  .delete-btn:hover { background: #e09090; }
+  tr:hover .delete-btn { display: inline-flex; }
+
+  /* 이름 추가 폼 */
+  .add-row {
+    padding: 10px 12px;
+    display: flex;
+    gap: 8px;
+    border-top: 1px dashed var(--border);
+  }
+  .add-row input {
+    flex: 1;
+    padding: 7px 10px;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 0.82rem;
+    background: var(--bg);
+    color: var(--text);
+    outline: none;
+  }
+  .add-row input:focus { border-color: var(--accent); }
+  .add-row button {
+    padding: 7px 14px;
+    background: var(--accent);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .add-row button:hover { background: #a85f25; }
+
+  /* 소개자 추가 */
+  .intro-add-btn {
+    background: none;
+    border: none;
+    color: var(--text-sub);
+    font-size: 0.72rem;
+    cursor: pointer;
+    padding: 2px 6px;
+    border-radius: 4px;
+    margin-left: 4px;
+  }
+  .intro-add-btn:hover { background: var(--accent-light); color: var(--accent); }
+
+  /* 로딩 */
+  #loading {
+    text-align: center;
+    padding: 40px;
+    color: var(--text-sub);
+    font-size: 0.85rem;
+  }
+
+  /* 날짜 표시 */
+  .week-label {
+    text-align: center;
+    font-size: 0.75rem;
+    color: var(--text-sub);
+    margin-bottom: 14px;
+  }
+
+  /* 모바일 최적화 */
+  @media (max-width: 480px) {
+    .check-btn { width: 28px; height: 28px; font-size: 0.9rem; }
+    td { padding: 8px 2px; }
+    td.name-cell { padding-left: 10px; font-size: 0.78rem; }
+  }
+</style>
+</head>
+<body>
+
+<h1>문화부 집회 주간 식수 인원 파악</h1>
+<p class="week-label" id="weekLabel">불러오는 중...</p>
+
+<div class="summary-bar" id="summaryBar">
+  <div class="summary-card"><div class="day-label">월</div><div class="day-count" id="sum-0">-</div></div>
+  <div class="summary-card"><div class="day-label">화</div><div class="day-count" id="sum-1">-</div></div>
+  <div class="summary-card"><div class="day-label">수</div><div class="day-count" id="sum-2">-</div></div>
+  <div class="summary-card"><div class="day-label">목</div><div class="day-count" id="sum-3">-</div></div>
+  <div class="summary-card"><div class="day-label">금</div><div class="day-count" id="sum-4">-</div></div>
+</div>
+
+<div id="loading">데이터 불러오는 중...</div>
+<div id="mainContent" style="display:none">
+
+  <!-- 남자 테이블 -->
+  <div class="table-section">
+    <div class="section-header male">👨 남자</div>
+    <table>
+      <thead>
+        <tr>
+          <th class="name-col">이름</th>
+          <th>월</th><th>화</th><th>수</th><th>목</th><th>금</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody id="maleBody"></tbody>
+    </table>
+    <div class="add-row">
+      <input type="text" id="maleInput" placeholder="이름 입력" maxlength="10">
+      <button onclick="addPerson('male')">추가</button>
+    </div>
+  </div>
+
+  <!-- 여자 테이블 -->
+  <div class="table-section">
+    <div class="section-header female">👩 여자</div>
+    <table>
+      <thead>
+        <tr>
+          <th class="name-col">이름</th>
+          <th>월</th><th>화</th><th>수</th><th>목</th><th>금</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody id="femaleBody"></tbody>
+    </table>
+    <div class="add-row">
+      <input type="text" id="femaleInput" placeholder="이름 입력" maxlength="10">
+      <button onclick="addPerson('female')">추가</button>
+    </div>
+  </div>
+
+</div>
+
+<!-- Firebase SDK -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getDatabase, ref, onValue, set, get } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+const firebaseConfig = {
+  databaseURL: "https://k-hary-default-rtdb.firebaseio.com/"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
+// 주차 키 생성 (월요일 기준)
+function getWeekKey() {
+  const now = new Date();
+  const day = now.getDay();
+  const diff = now.getDate() - day + (day === 0 ? -6 : 1);
+  const monday = new Date(now.setDate(diff));
+  return `week_${monday.getFullYear()}_${String(monday.getMonth()+1).padStart(2,'0')}_${String(monday.getDate()).padStart(2,'0')}`;
+}
+
+function getWeekLabel() {
+  const now = new Date();
+  const day = now.getDay();
+  const diff = now.getDate() - day + (day === 0 ? -6 : 1);
+  const monday = new Date(new Date().setDate(diff));
+  const friday = new Date(monday);
+  friday.setDate(monday.getDate() + 4);
+  const fmt = d => `${d.getMonth()+1}/${d.getDate()}`;
+  return `${monday.getFullYear()}년 ${fmt(monday)} ~ ${fmt(friday)}`;
+}
+
+const WEEK_KEY = getWeekKey();
+const DB_PATH = `siksu/${WEEK_KEY}`;
+const DAYS = ['월','화','수','목','금'];
+
+let data = { male: [], female: [] };
+
+// 초기 데이터
+const DEFAULT_MALE = [
+  {name:'김동언', intro:false}, {name:'이재열', intro:false}, {name:'문정대', intro:false},
+  {name:'김건하', intro:false}, {name:'선세은', intro:true}, {name:'김태윤', intro:false},
+  {name:'박인국', intro:false}, {name:'조한영', intro:true}, {name:'정찬원', intro:false},
+  {name:'박정민', intro:false}, {name:'서보현', intro:false}, {name:'신민기', intro:false},
+  {name:'이승욱', intro:true}, {name:'안병철', intro:false}, {name:'조대희', intro:false},
+  {name:'김상우', intro:false}, {name:'이승호', intro:false}, {name:'임준혁', intro:false}
+];
+const DEFAULT_FEMALE = [
+  {name:'하연서', intro:false}, {name:'이애령', intro:false}, {name:'고연희', intro:false},
+  {name:'홍정인', intro:false}, {name:'박규리', intro:false}, {name:'백선우', intro:false},
+  {name:'박예정', intro:false}, {name:'양은솔', intro:false}, {name:'문보람', intro:false},
+  {name:'주희중', intro:true}, {name:'신현영', intro:false}, {name:'김민선', intro:false},
+  {name:'이승연', intro:false}
+];
+
+function makePersonData(name, intro=false) {
+  return { name, intro, days: [false,false,false,false,false] };
+}
+
+async function loadData() {
+  const snapshot = await get(ref(db, DB_PATH));
+  if (snapshot.exists()) {
+    data = snapshot.val();
+  } else {
+    // 첫 주차: 기본 데이터 세팅
+    data = {
+      male: DEFAULT_MALE.map(p => makePersonData(p.name, p.intro)),
+      female: DEFAULT_FEMALE.map(p => makePersonData(p.name, p.intro))
+    };
+    await set(ref(db, DB_PATH), data);
+  }
+  render();
+  document.getElementById('loading').style.display = 'none';
+  document.getElementById('mainContent').style.display = 'block';
+  document.getElementById('weekLabel').textContent = getWeekLabel();
+}
+
+function saveData() {
+  set(ref(db, DB_PATH), data);
+}
+
+function render() {
+  renderGroup('male', 'maleBody');
+  renderGroup('female', 'femaleBody');
+  updateSummary();
+}
+
+function renderGroup(group, tbodyId) {
+  const tbody = document.getElementById(tbodyId);
+  tbody.innerHTML = '';
+  (data[group] || []).forEach((person, idx) => {
+    const tr = document.createElement('tr');
+    if (person.intro) tr.classList.add('intro-row');
+
+    // 이름 셀
+    const nameTd = document.createElement('td');
+    nameTd.className = 'name-cell';
+    nameTd.textContent = person.intro ? `↳ ${person.name}` : person.name;
+    tr.appendChild(nameTd);
+
+    // 요일 체크
+    DAYS.forEach((_, di) => {
+      const td = document.createElement('td');
+      const btn = document.createElement('button');
+      btn.className = 'check-btn' + (person.days[di] ? ' checked' : '');
+      btn.textContent = person.days[di] ? '○' : '';
+      btn.onclick = () => toggleDay(group, idx, di);
+      td.appendChild(btn);
+      tr.appendChild(td);
+    });
+
+    // 삭제 버튼
+    const actionTd = document.createElement('td');
+    const delBtn = document.createElement('button');
+    delBtn.className = 'delete-btn';
+    delBtn.textContent = '×';
+    delBtn.title = '삭제';
+    delBtn.onclick = () => deletePerson(group, idx);
+    actionTd.appendChild(delBtn);
+    tr.appendChild(actionTd);
+
+    tbody.appendChild(tr);
+  });
+}
+
+function toggleDay(group, idx, dayIdx) {
+  data[group][idx].days[dayIdx] = !data[group][idx].days[dayIdx];
+  saveData();
+  render();
+}
+
+function updateSummary() {
+  const all = [...(data.male||[]), ...(data.female||[])];
+  DAYS.forEach((_, di) => {
+    const count = all.filter(p => p.days[di]).length;
+    document.getElementById(`sum-${di}`).textContent = count;
+  });
+}
+
+window.addPerson = function(group) {
+  const input = document.getElementById(group === 'male' ? 'maleInput' : 'femaleInput');
+  const name = input.value.trim();
+  if (!name) return;
+  if (!data[group]) data[group] = [];
+  data[group].push(makePersonData(name, false));
+  input.value = '';
+  saveData();
+  render();
+}
+
+window.deletePerson = function(group, idx) {
+  const name = data[group][idx].name;
+  if (!confirm(`"${name}" 을(를) 삭제할까요?`)) return;
+  data[group].splice(idx, 1);
+  saveData();
+  render();
+}
+
+// 엔터키로 추가
+document.getElementById('maleInput').addEventListener('keydown', e => { if(e.key==='Enter') window.addPerson('male'); });
+document.getElementById('femaleInput').addEventListener('keydown', e => { if(e.key==='Enter') window.addPerson('female'); });
+
+loadData();
+</script>
+</body>
+</html>
