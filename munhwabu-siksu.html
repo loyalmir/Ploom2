@@ -556,8 +556,27 @@
         <thead>
           <tr>
             <th class="name-col">이름</th>
-            <th>월</th><th>화</th><th>수</th><th>목</th><th>금</th>
-            <th></th>
+            <th colspan="2">월</th><th colspan="2">화</th><th colspan="2">수</th><th colspan="2">목</th><th colspan="2">금</th>
+            <tr>
+
+  <th></th>
+
+  <th>참</th>
+  <th>식</th>
+
+  <th>참</th>
+  <th>식</th>
+
+  <th>참</th>
+  <th>식</th>
+
+  <th>참</th>
+  <th>식</th>
+              
+  <th>참</th>
+  <th>식</th>
+
+  <th></th>
           </tr>
         </thead>
         <tbody id="maleBody"></tbody>
@@ -575,8 +594,27 @@
         <thead>
           <tr>
             <th class="name-col">이름</th>
-            <th>월</th><th>화</th><th>수</th><th>목</th><th>금</th>
-            <th></th>
+            <th colspan="2">월</th><th colspan="2">화</th><th colspan="2">수</th><th colspan="2">목</th><th colspan="2">금</th>
+            <tr>
+
+  <th></th>
+
+  <th>참</th>
+  <th>식</th>
+
+  <th>참</th>
+  <th>식</th>
+
+  <th>참</th>
+  <th>식</th>
+
+  <th>참</th>
+  <th>식</th>
+              
+  <th>참</th>
+  <th>식</th>
+
+  <th></th>
           </tr>
         </thead>
         <tbody id="femaleBody"></tbody>
@@ -621,7 +659,12 @@ const DEFAULT_TEAM2 = {
 };
 
 function makePerson(name, intro=false) {
-  return { name, intro, days: [false,false,false,false,false] };
+  return {
+    name,
+    intro,
+    attend: [false,false,false,false,false],
+    meal: [false,false,false,false,false] 
+  };
 }
 
 function teamPath(team) { return `siksu/team${team}`; }
@@ -654,7 +697,11 @@ async function loadAllTeams() {
   [1,2,3,4].forEach(t => {
     ['male','female'].forEach(g => {
       (allData[t][g]||[]).forEach(p => {
-        if (!p.days) p.days = [false,false,false,false,false];
+       if (!p.attend)
+  p.attend = [false,false,false,false,false];
+
+        if (!p.meal)
+  p.meal = [false,false,false,false,false];
       });
     });
   });
@@ -681,7 +728,39 @@ function render() {
     renderGroup('male', 'maleBody');
     renderGroup('female', 'femaleBody');
     updateSummary();
-  }
+
+function updateSummary() {
+
+  const d = getData();
+
+  const all = [
+    ...(d.male || []),
+    ...(d.female || [])
+  ];
+
+  const fruits = all.filter(p => p.intro);
+
+  DAYS.forEach((_, di) => {
+
+    const attendCount =
+      all.filter(p => p.attend[di]).length;
+
+    const mealCount =
+      all.filter(p => p.meal[di]).length;
+
+    document.getElementById(`sum-${di}`).textContent =
+      `${attendCount}/${mealCount}`;
+
+    const fruitAttend =
+      fruits.filter(p => p.attend[di]).length;
+
+    const fruitMeal =
+      fruits.filter(p => p.meal[di]).length;
+
+    document.getElementById(`fruit-${di}`).textContent =
+      `${fruitAttend}/${fruitMeal}`;
+
+  });
 }
 
 function updateTabs() {
@@ -731,10 +810,16 @@ function renderDashboard() {
     });
 
     fruits.forEach(person => {
-      person.days.forEach((checked, di) => {
-        if (checked) fruitMealCounts[di]++;
-      });
-    });
+
+  person.meal.forEach((checked, di) => {
+
+    if (checked) {
+      fruitMealCounts[di]++;
+    }
+
+  });
+
+});
 
     const card = document.createElement('div');
     card.className = 'dash-team-card';
@@ -813,7 +898,7 @@ function updateSummary() {
   const all = [...(d.male||[]), ...(d.female||[])];
   const fruits = all.filter(p => p.intro);
   const DAYS = ['월','화','수','목','금'];
-  DAYS.forEach((_, di) => {
+  ((_, di) => {
     document.getElementById(`sum-${di}`).textContent = all.filter(p => p.days[di]).length;
     document.getElementById(`fruit-${di}`).textContent = fruits.filter(p => p.days[di]).length;
   });
@@ -834,13 +919,44 @@ function renderGroup(group, tbodyId) {
     tr.appendChild(nameTd);
 
     DAYS.forEach((_, di) => {
-      const td = document.createElement('td');
-      const btn = document.createElement('button');
-      btn.className = 'check-btn' + (person.days[di] ? ' checked' : '') + (person.intro ? ' intro-check' : '');
-      btn.textContent = person.days[di] ? '○' : '';
-      btn.onclick = () => toggleDay(group, idx, di);
-      td.appendChild(btn);
-      tr.appendChild(td);
+
+      // 참석
+  const attendTd = document.createElement('td');
+
+  const attendBtn = document.createElement('button');
+
+  attendBtn.className =
+    'check-btn' +
+    (person.attend[di] ? ' checked' : '') +
+    (person.intro ? ' intro-check' : '');
+
+  attendBtn.textContent =
+    person.attend[di] ? '✓' : '';
+
+  attendBtn.onclick = () =>
+    toggleAttend(group, idx, di);
+
+  attendTd.appendChild(attendBtn);
+  tr.appendChild(attendTd);
+
+  // 식사
+  const mealTd = document.createElement('td');
+
+  const mealBtn = document.createElement('button');
+
+  mealBtn.className =
+    'check-btn' +
+    (person.meal[di] ? ' checked' : '') +
+    (person.intro ? ' intro-check' : '');
+
+  mealBtn.textContent =
+    person.meal[di] ? '✓' : '';
+
+  mealBtn.onclick = () =>
+    toggleMeal(group, idx, di);
+
+  mealTd.appendChild(mealBtn);
+  tr.appendChild(mealTd);
     });
 
     const actTd = document.createElement('td');
@@ -916,8 +1032,29 @@ function renderGroup(group, tbodyId) {
   });
 }
 
-function toggleDay(group, idx, di) {
-  getData()[group][idx].days[di] = !getData()[group][idx].days[di];
+ function toggleAttend(group, idx, di) {
+  const person = getData()[group][idx];
+
+  person.attend[di] = !person.attend[di];
+
+  if (!person.attend[di]) {
+    person.meal[di] = false;
+  }
+
+  saveTeam(currentTeam);
+  render();
+}
+
+function toggleMeal(group, idx, di) {
+  const person = getData()[group][idx];
+
+  if (!person.attend[di]) {
+    alert('먼저 참석을 체크하세요.');
+    return;
+  }
+
+  person.meal[di] = !person.meal[di];
+
   saveTeam(currentTeam);
   render();
 }
