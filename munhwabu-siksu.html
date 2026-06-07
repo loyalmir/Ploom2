@@ -625,51 +625,108 @@ function renderDashboard() {
   teamGrid.innerHTML = '';
 
   document.querySelector('.dash-total-card')?.remove();
+  document.querySelector('.dash-meal-summary')?.remove();
 
-  let grandTotal = 0, grandFruit = 0;
+  let grandTotal = 0;
+  let grandFruit = 0;
+
+  const mealCounts = [0,0,0,0,0];
+  const fruitMealCounts = [0,0,0,0,0];
 
   [1,2,3,4].forEach(t => {
     const d = allData[t] || { male:[], female:[] };
+
     const all = [...(d.male||[]), ...(d.female||[])];
-    const fruit = all.filter(p => p.intro).length;
+    const fruits = all.filter(p => p.intro);
+
     const total = all.length;
+    const fruit = fruits.length;
+
     grandTotal += total;
     grandFruit += fruit;
 
+    all.forEach(person => {
+      person.days.forEach((checked, di) => {
+        if (checked) mealCounts[di]++;
+      });
+    });
+
+    fruits.forEach(person => {
+      person.days.forEach((checked, di) => {
+        if (checked) fruitMealCounts[di]++;
+      });
+    });
+
     const card = document.createElement('div');
     card.className = 'dash-team-card';
+
     card.innerHTML = `
       <div class="tc-label">${t}팀</div>
-      <div class="tc-row">
-        <div class="tc-col">
-          <div class="tc-sub">👥 총 인원</div>
-          <div class="tc-num">${total}<span class="tc-unit">명</span></div>
-        </div>
-        <div class="tc-col fruit-col">
-          <div class="tc-sub">🌱 열매</div>
-          <div class="tc-num">${fruit}<span class="tc-unit">명</span></div>
-        </div>
-      </div>`;
-    card.onclick = () => window.switchTeam(t);
-    teamGrid.appendChild(card);
-  });
 
-  // 전체 합산 카드
-  const totalCard = document.createElement('div');
-  totalCard.className = 'dash-total-card';
-  totalCard.innerHTML = `
-    <div class="tc-label">✨ 전체 합산</div>
     <div class="tc-row">
       <div class="tc-col">
         <div class="tc-sub">👥 총 인원</div>
-        <div class="tc-num">${grandTotal}<span class="tc-unit">명</span></div>
-      </div>
-      <div class="tc-col fruit-col">
+          <div class="tc-num">${total}<span class="tc-unit">명</span></div>
+          </div>
+        
+        <div class="tc-col fruit-col">
         <div class="tc-sub">🌱 열매</div>
+          <div class="tc-num">${fruit}<span class="tc-unit">명</span></div>
+          </div>
+        </div>
+      `;
+    
+    card.onclick = () => switchTeam(t)
+    teamGrid.appendChild(card);
+  });
+  
+  const totalCard = document.createElement('div');
+  totalCard.className = 'dash-total-card';
+
+totalCard.innerHTML = `
+  <div class="tc-label">✨ 전체 합산</div>
+    
+  <div class="tc-row">
+    <div class="tc-col">
+      <div class="tc-sub">👥 총 인원</div>
+        <div class="tc-num">${grandTotal}<span class="tc-unit">명</span></div>
+        </div>
+      
+      <div class="tc-col fruit-col">
+      <div class="tc-sub">🌱 열매</div>
         <div class="tc-num">${grandFruit}<span class="tc-unit">명</span></div>
+        </div>
       </div>
-    </div>`;
+    `;
+  
   teamGrid.after(totalCard);
+  
+  const mealSummary = document.createElement('div');
+  mealSummary.className = 'dash-meal-summary';
+  mealSummary.innerHTML = `
+  <h3>🍱 전체 식수 현황</h3>
+    <div class="dash-days">
+    ${DAYS.map((day,i)=>`
+      <div class="dash-day-card">
+        <div class="day">${day}</div>
+          <div class="count">${mealCounts[i]}</div>
+          </div>
+        `).join('')}
+      </div>
+    
+    <h3 style="margin-top:18px;">🌱 열매 식수 현황</h3>
+    
+    <div class="dash-days">
+    ${DAYS.map((day,i)=>`
+      <div class="dash-day-card fruit">
+        <div class="day">${day}</div>
+          <div class="count">${fruitMealCounts[i]}</div>
+          </div>
+        `).join('')}
+      </div>
+  `;
+
+  totalCard.after(mealSummary);
 }
 
 function updateSummary() {
