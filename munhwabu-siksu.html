@@ -624,6 +624,8 @@ function renderDashboard() {
   const teamGrid = document.getElementById('dashTeamGrid');
   teamGrid.innerHTML = '';
 
+  document.querySelector('.dash-total-card')?.remove();
+
   let grandTotal = 0, grandFruit = 0;
 
   [1,2,3,4].forEach(t => {
