@@ -806,6 +806,9 @@ function renderGroup(group, tbodyId) {
     const nameTd = document.createElement('td');
     nameTd.className = 'name-cell';
     nameTd.textContent = person.intro ? `↳ ${person.name}` : person.name;
+    nameTd.title = '눌러서 이름 수정';
+    nameTd.style.cursor = 'pointer';
+    nameTd.onclick = () => editName(group, idx, nameTd, person);
     tr.appendChild(nameTd);
 
     DAYS.forEach((_, di) => {
