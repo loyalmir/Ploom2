@@ -779,6 +779,10 @@ function renderDashboard() {
     <div class="dash-days">
       ${DAYS.map((day,i)=>`<div class="dash-day-card"><div class="day">${day}</div><div class="count">${attendCounts[i]}</div></div>`).join('')}
     </div>
+    <h3 style="margin-top:18px;">🌱 열매 참석 현황</h3>
+    <div class="dash-days">
+      ${DAYS.map((day,i)=>`<div class="dash-day-card fruit"><div class="day">${day}</div><div class="count">${fruitAttendCounts[i]}</div></div>`).join('')}
+    </div>
     <h3 style="margin-top:18px;">🍱 전체 식사 현황</h3>
     <div class="dash-days">
       ${DAYS.map((day,i)=>`<div class="dash-day-card meal"><div class="day">${day}</div><div class="count">${mealCounts[i]}</div></div>`).join('')}
