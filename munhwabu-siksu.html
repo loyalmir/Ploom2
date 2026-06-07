@@ -717,17 +717,27 @@ function saveTeam(team) {
 function getData() { return allData[currentTeam] || { male: [], female: [] }; }
 
 function render() {
+
   updateTabs();
+
   if (currentTeam === 0) {
+
     document.getElementById('dashboardContent').style.display = 'block';
     document.getElementById('mainContent').style.display = 'none';
+
     renderDashboard();
+
   } else {
+
     document.getElementById('dashboardContent').style.display = 'none';
     document.getElementById('mainContent').style.display = 'block';
+
     renderGroup('male', 'maleBody');
     renderGroup('female', 'femaleBody');
+
     updateSummary();
+  }
+}
 
 function updateSummary() {
 
@@ -803,11 +813,11 @@ function renderDashboard() {
     grandTotal += total;
     grandFruit += fruit;
 
-    all.forEach(person => {
-      person.days.forEach((checked, di) => {
-        if (checked) mealCounts[di]++;
-      });
-    });
+all.forEach(person => {
+  person.meal.forEach((checked, di) => {
+    if (checked) mealCounts[di]++;
+  });
+});
 
     fruits.forEach(person => {
 
@@ -891,17 +901,6 @@ totalCard.innerHTML = `
   `;
 
   totalCard.after(mealSummary);
-}
-
-function updateSummary() {
-  const d = getData();
-  const all = [...(d.male||[]), ...(d.female||[])];
-  const fruits = all.filter(p => p.intro);
-  const DAYS = ['월','화','수','목','금'];
-  ((_, di) => {
-    document.getElementById(`sum-${di}`).textContent = all.filter(p => p.days[di]).length;
-    document.getElementById(`fruit-${di}`).textContent = fruits.filter(p => p.days[di]).length;
-  });
 }
 
 function renderGroup(group, tbodyId) {
@@ -989,7 +988,7 @@ function renderGroup(group, tbodyId) {
       const inputTr = document.createElement('tr');
       inputTr.className = 'intro-input-row';
       const inputTd = document.createElement('td');
-      inputTd.colSpan = 7;
+      inputTd.colSpan = 12;
 
       const wrap = document.createElement('div');
       wrap.className = 'intro-input-wrap';
