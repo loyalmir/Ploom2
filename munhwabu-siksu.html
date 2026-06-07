@@ -613,6 +613,12 @@ function updateTabs() {
   });
 }
 
+window.switchTeam = function(team) {
+  introOpenState = { male: -1, female: -1 };
+  currentTeam = team;
+  render();
+};
+
 function renderDashboard() {
   const teamGrid = document.getElementById('dashTeamGrid');
   teamGrid.innerHTML = '';
