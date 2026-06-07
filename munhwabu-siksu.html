@@ -252,14 +252,13 @@
     color: #a03030;
     font-size: 0.72rem;
     cursor: pointer;
-    display: none;
+    display: inline-flex;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
     transition: background 0.15s;
   }
   .delete-btn:hover { background: #e09090; }
-  tr:hover .delete-btn { display: inline-flex; }
 
   .intro-add-btn {
     font-size: 0.65rem;
@@ -270,11 +269,10 @@
     color: var(--fruit);
     cursor: pointer;
     white-space: nowrap;
-    display: none;
+    display: inline-flex;
     transition: all 0.15s;
   }
   .intro-add-btn:hover { background: var(--fruit-light); }
-  tr:not(.intro-row):hover .intro-add-btn { display: inline-flex; }
 
   .intro-input-row td {
     padding: 6px 8px 6px 22px;
