@@ -20,55 +20,152 @@
     --male-header: #b8d0e8;
     --female-header: #f5c8c8;
     --row-hover: rgba(200,120,58,0.07);
+    --fruit: #6ab04c;
+    --fruit-light: #e8f5e0;
   }
 
   body {
     font-family: 'Noto Sans KR', sans-serif;
     background: var(--bg);
     min-height: 100vh;
-    padding: 24px 16px 60px;
+    padding: 0 0 60px;
     color: var(--text);
+  }
+
+  /* 상단 헤더 */
+  .header {
+    background: var(--surface);
+    border-bottom: 1.5px solid var(--border);
+    padding: 18px 16px 0;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
   }
 
   h1 {
     text-align: center;
-    font-size: 1.25rem;
+    font-size: 1.1rem;
     font-weight: 700;
     letter-spacing: -0.02em;
-    margin-bottom: 20px;
+    margin-bottom: 14px;
     color: var(--text);
   }
 
+  /* 팀 탭 */
+  .team-tabs {
+    display: flex;
+    gap: 4px;
+    overflow-x: auto;
+    scrollbar-width: none;
+    padding-bottom: 0;
+  }
+  .team-tabs::-webkit-scrollbar { display: none; }
+
+  .team-tab {
+    flex-shrink: 0;
+    padding: 8px 20px;
+    border-radius: 10px 10px 0 0;
+    border: 1.5px solid var(--border);
+    border-bottom: none;
+    background: var(--bg);
+    color: var(--text-sub);
+    font-family: inherit;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s;
+    position: relative;
+    bottom: -1px;
+  }
+  .team-tab:hover { background: var(--accent-light); color: var(--accent); }
+  .team-tab.active {
+    background: var(--surface);
+    color: var(--accent);
+    border-color: var(--border);
+    border-bottom-color: var(--surface);
+  }
+
+  /* 본문 */
+  .content {
+    padding: 16px 16px 0;
+  }
+
+  /* 요약 카드 영역 */
+  .summary-area {
+    margin-bottom: 16px;
+  }
+  .summary-label {
+    font-size: 0.72rem;
+    color: var(--text-sub);
+    margin-bottom: 6px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+  }
   .summary-bar {
     display: flex;
-    gap: 8px;
-    justify-content: center;
+    gap: 6px;
     flex-wrap: wrap;
-    margin-bottom: 20px;
   }
   .summary-card {
     background: var(--surface);
     border: 1.5px solid var(--border);
     border-radius: 10px;
-    padding: 8px 16px;
+    padding: 7px 12px;
     text-align: center;
-    min-width: 60px;
+    min-width: 54px;
+    flex: 1;
   }
-  .summary-card .day-label { font-size: 0.7rem; color: var(--text-sub); margin-bottom: 2px; }
-  .summary-card .day-count { font-size: 1.3rem; font-weight: 700; color: var(--accent); }
+  .summary-card.fruit-card {
+    border-color: var(--fruit);
+    background: var(--fruit-light);
+  }
+  .summary-card .day-label {
+    font-size: 0.65rem;
+    color: var(--text-sub);
+    margin-bottom: 2px;
+  }
+  .summary-card.fruit-card .day-label { color: var(--fruit); }
+  .summary-card .day-count {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--accent);
+  }
+  .summary-card.fruit-card .day-count { color: var(--fruit); }
 
+  .summary-divider {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 10px 0 6px;
+  }
+  .summary-divider span {
+    font-size: 0.72rem;
+    color: var(--fruit);
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+  }
+  .summary-divider::before, .summary-divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: #d4e8c8;
+  }
+
+  /* 테이블 */
   .table-section {
     background: var(--surface);
     border-radius: 14px;
     border: 1.5px solid var(--border);
     overflow: hidden;
-    margin-bottom: 16px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    margin-bottom: 14px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
   }
 
   .section-header {
-    padding: 10px 16px;
-    font-size: 0.8rem;
+    padding: 9px 14px;
+    font-size: 0.78rem;
     font-weight: 700;
     letter-spacing: 0.05em;
     color: var(--text-sub);
@@ -79,14 +176,14 @@
   table { width: 100%; border-collapse: collapse; }
 
   thead th {
-    padding: 8px 4px;
-    font-size: 0.75rem;
+    padding: 7px 4px;
+    font-size: 0.72rem;
     font-weight: 500;
     color: var(--text-sub);
     border-bottom: 1.5px solid var(--border);
     text-align: center;
   }
-  thead th.name-col { text-align: left; padding-left: 14px; width: 100px; }
+  thead th.name-col { text-align: left; padding-left: 12px; width: 90px; }
 
   tbody tr {
     border-bottom: 1px solid #ede6d6;
@@ -96,37 +193,35 @@
   tbody tr:hover { background: var(--row-hover); }
 
   td {
-    padding: 9px 4px;
+    padding: 8px 4px;
     text-align: center;
     font-size: 0.82rem;
   }
   td.name-cell {
     text-align: left;
-    padding-left: 14px;
+    padding-left: 12px;
     font-weight: 500;
     white-space: nowrap;
   }
   tr.intro-row td.name-cell {
-    color: var(--text-sub);
-    font-size: 0.78rem;
-    padding-left: 24px;
+    color: var(--fruit);
+    font-size: 0.76rem;
+    padding-left: 22px;
+    font-weight: 400;
   }
 
   .check-btn {
-    width: 32px;
-    height: 32px;
+    width: 30px;
+    height: 30px;
     border-radius: 8px;
     border: 1.5px solid var(--border);
     background: transparent;
     cursor: pointer;
-    font-size: 1rem;
+    font-size: 0.95rem;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    transition: 
-      background-color 0.15s,
-      border-color 0.15s,
-      transform 0.15;
+    transition: all 0.15s;
     color: transparent;
   }
   .check-btn.checked {
@@ -134,75 +229,56 @@
     border-color: var(--accent);
     color: white;
   }
-  .check-btn:active { transform: scale(0.92); }
+  .check-btn.intro-check.checked {
+    background: var(--fruit);
+    border-color: var(--fruit);
+  }
+  .check-btn:active { transform: scale(0.9); }
 
-  /* 액션 셀 - 삭제 + 소개추가 버튼 */
   .action-cell {
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-end;
     gap: 4px;
-    padding-right: 4px;
-
-    width: 90px;
-    min-width: 90px;
+    padding-right: 8px;
+    min-width: 70px;
   }
   .delete-btn {
-    width: 22px;
-    height: 22px;
+    width: 20px;
+    height: 20px;
     border-radius: 50%;
     border: none;
     background: #f0c0c0;
     color: #a03030;
-    font-size: 0.75rem;
+    font-size: 0.72rem;
     cursor: pointer;
-    
-    display: inline-flex;
+    display: none;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
-    
-    transition: 
-      opacity 0.15,
-      background 0.15;
+    transition: background 0.15s;
   }
-  .delete-btn:hover { 
-    background: #e09090; }
-  { 
-    opacity: 1;
-    visibility: visible; }
+  .delete-btn:hover { background: #e09090; }
+  tr:hover .delete-btn { display: inline-flex; }
 
-.intro-add-btn {
-  font-size: 0.68rem;
-  padding: 3px 6px;
-  border-radius: 6px;
-  border: 1px dashed var(--border);
-  background: none;
-  color: var(--text-sub);
-  cursor: pointer;
-  white-space: nowrap;
+  .intro-add-btn {
+    font-size: 0.65rem;
+    padding: 3px 5px;
+    border-radius: 5px;
+    border: 1px dashed #a8cc90;
+    background: none;
+    color: var(--fruit);
+    cursor: pointer;
+    white-space: nowrap;
+    display: none;
+    transition: all 0.15s;
+  }
+  .intro-add-btn:hover { background: var(--fruit-light); }
+  tr:not(.intro-row):hover .intro-add-btn { display: inline-flex; }
 
-  display: inline-flex;
- 
-  transition:
-    opacity 0.15s,
-    background 0.15s,
-    border-color 0.15s;
-
-}
-.intro-add-btn:hover {
-  background: var(--accent-light);
-  border-color: var(--accent);
-  color: var(--accent);
-}
-{
-  opacity: 1;
-  visibility: visible;
-}
-  /* 소개 추가 인풋 (인라인) */
   .intro-input-row td {
-    padding: 6px 8px 6px 28px;
-    background: #f8f4ec;
+    padding: 6px 8px 6px 22px;
+    background: #f2f9ee;
   }
   .intro-input-wrap {
     display: flex;
@@ -212,7 +288,7 @@
   .intro-input-wrap input {
     flex: 1;
     padding: 5px 8px;
-    border: 1.5px solid var(--border);
+    border: 1.5px solid #a8cc90;
     border-radius: 7px;
     font-family: inherit;
     font-size: 0.78rem;
@@ -220,10 +296,10 @@
     color: var(--text);
     outline: none;
   }
-  .intro-input-wrap input:focus { border-color: var(--accent); }
+  .intro-input-wrap input:focus { border-color: var(--fruit); }
   .intro-confirm-btn {
     padding: 5px 10px;
-    background: var(--accent);
+    background: var(--fruit);
     color: white;
     border: none;
     border-radius: 7px;
@@ -244,7 +320,7 @@
   }
 
   .add-row {
-    padding: 10px 12px;
+    padding: 9px 12px;
     display: flex;
     gap: 8px;
     border-top: 1px dashed var(--border);
@@ -276,69 +352,103 @@
 
   #loading {
     text-align: center;
-    padding: 40px;
+    padding: 60px;
     color: var(--text-sub);
     font-size: 0.85rem;
   }
 
+  .empty-team {
+    text-align: center;
+    padding: 40px 16px;
+    color: var(--text-sub);
+    font-size: 0.82rem;
+  }
+
   @media (max-width: 480px) {
-    .check-btn { width: 28px; height: 28px; font-size: 0.9rem; }
-    td { padding: 8px 2px; }
+    .check-btn { width: 27px; height: 27px; font-size: 0.85rem; }
+    td { padding: 7px 2px; }
     td.name-cell { padding-left: 10px; font-size: 0.78rem; }
+    .team-tab { padding: 8px 14px; }
   }
 </style>
 </head>
 <body>
 
-<h1>문화부 집회 주간 식수 인원 파악</h1>
-
-<div class="summary-bar">
-  <div class="summary-card"><div class="day-label">월</div><div class="day-count" id="sum-0">-</div></div>
-  <div class="summary-card"><div class="day-label">화</div><div class="day-count" id="sum-1">-</div></div>
-  <div class="summary-card"><div class="day-label">수</div><div class="day-count" id="sum-2">-</div></div>
-  <div class="summary-card"><div class="day-label">목</div><div class="day-count" id="sum-3">-</div></div>
-  <div class="summary-card"><div class="day-label">금</div><div class="day-count" id="sum-4">-</div></div>
+<div class="header">
+  <h1>문화부 집회 주간 식수 인원 파악</h1>
+  <div class="team-tabs" id="teamTabs">
+    <button class="team-tab" onclick="switchTeam(1)">1팀</button>
+    <button class="team-tab active" onclick="switchTeam(2)">2팀</button>
+    <button class="team-tab" onclick="switchTeam(3)">3팀</button>
+    <button class="team-tab" onclick="switchTeam(4)">4팀</button>
+  </div>
 </div>
 
-<div id="loading">데이터 불러오는 중...</div>
-<div id="mainContent" style="display:none">
+<div class="content">
+  <div id="loading">데이터 불러오는 중...</div>
+  <div id="mainContent" style="display:none">
 
-  <div class="table-section">
-    <div class="section-header male">👨 형제</div>
-    <table>
-      <thead>
-        <tr>
-          <th class="name-col">이름</th>
-          <th>월</th><th>화</th><th>수</th><th>목</th><th>금</th>
-          <th></th>
-        </tr>
-      </thead>
-      <tbody id="maleBody"></tbody>
-    </table>
-    <div class="add-row">
-      <input type="text" id="maleInput" placeholder="이름 입력" maxlength="10">
-      <button onclick="addPerson('male')">추가</button>
+    <!-- 전체 합계 -->
+    <div class="summary-area">
+      <div class="summary-label">전체 식수</div>
+      <div class="summary-bar" id="totalSummaryBar">
+        <div class="summary-card"><div class="day-label">월</div><div class="day-count" id="sum-0">-</div></div>
+        <div class="summary-card"><div class="day-label">화</div><div class="day-count" id="sum-1">-</div></div>
+        <div class="summary-card"><div class="day-label">수</div><div class="day-count" id="sum-2">-</div></div>
+        <div class="summary-card"><div class="day-label">목</div><div class="day-count" id="sum-3">-</div></div>
+        <div class="summary-card"><div class="day-label">금</div><div class="day-count" id="sum-4">-</div></div>
+      </div>
+
+      <!-- 열매 합계 -->
+      <div class="summary-divider"><span>🌱 열매</span></div>
+      <div class="summary-bar" id="fruitSummaryBar">
+        <div class="summary-card fruit-card"><div class="day-label">월</div><div class="day-count" id="fruit-0">-</div></div>
+        <div class="summary-card fruit-card"><div class="day-label">화</div><div class="day-count" id="fruit-1">-</div></div>
+        <div class="summary-card fruit-card"><div class="day-label">수</div><div class="day-count" id="fruit-2">-</div></div>
+        <div class="summary-card fruit-card"><div class="day-label">목</div><div class="day-count" id="fruit-3">-</div></div>
+        <div class="summary-card fruit-card"><div class="day-label">금</div><div class="day-count" id="fruit-4">-</div></div>
+      </div>
     </div>
-  </div>
 
-  <div class="table-section">
-    <div class="section-header female">👩 자매</div>
-    <table>
-      <thead>
-        <tr>
-          <th class="name-col">이름</th>
-          <th>월</th><th>화</th><th>수</th><th>목</th><th>금</th>
-          <th></th>
-        </tr>
-      </thead>
-      <tbody id="femaleBody"></tbody>
-    </table>
-    <div class="add-row">
-      <input type="text" id="femaleInput" placeholder="이름 입력" maxlength="10">
-      <button onclick="addPerson('female')">추가</button>
+    <!-- 형제 테이블 -->
+    <div class="table-section">
+      <div class="section-header male">👨 형제</div>
+      <table>
+        <thead>
+          <tr>
+            <th class="name-col">이름</th>
+            <th>월</th><th>화</th><th>수</th><th>목</th><th>금</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="maleBody"></tbody>
+      </table>
+      <div class="add-row">
+        <input type="text" id="maleInput" placeholder="이름 입력" maxlength="10">
+        <button onclick="addPerson('male')">추가</button>
+      </div>
     </div>
-  </div>
 
+    <!-- 자매 테이블 -->
+    <div class="table-section">
+      <div class="section-header female">👩 자매</div>
+      <table>
+        <thead>
+          <tr>
+            <th class="name-col">이름</th>
+            <th>월</th><th>화</th><th>수</th><th>목</th><th>금</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="femaleBody"></tbody>
+      </table>
+      <div class="add-row">
+        <input type="text" id="femaleInput" placeholder="이름 입력" maxlength="10">
+        <button onclick="addPerson('female')">추가</button>
+      </div>
+    </div>
+
+  </div>
 </div>
 
 <script type="module">
@@ -347,97 +457,127 @@ import { getDatabase, ref, set, get } from "https://www.gstatic.com/firebasejs/1
 
 const app = initializeApp({ databaseURL: "https://k-hary-default-rtdb.firebaseio.com/" });
 const db = getDatabase(app);
-const DB_PATH = "siksu/main";
 const DAYS = ['월','화','수','목','금'];
 
-let data = { male: [], female: [] };
+let currentTeam = 2;
+// 팀별 데이터 캐시
+let allData = {};
 
-const DEFAULT_MALE = [
-  {name:'김동언',intro:false},{name:'이재열',intro:false},{name:'문정대',intro:false},
-  {name:'김건하',intro:false},{name:'선세은',intro:true},{name:'김태윤',intro:false},
-  {name:'박인국',intro:false},{name:'조한영',intro:true},{name:'정찬원',intro:false},
-  {name:'박정민',intro:false},{name:'서보현',intro:false},{name:'신민기',intro:false},
-  {name:'이승욱',intro:true},{name:'안병철',intro:false},{name:'조대희',intro:false},
-  {name:'김상우',intro:false},{name:'이승호',intro:false},{name:'임준혁',intro:false}
-];
-const DEFAULT_FEMALE = [
-  {name:'하연서',intro:false},{name:'이애령',intro:false},{name:'고연희',intro:false},
-  {name:'홍정인',intro:false},{name:'박규리',intro:false},{name:'백선우',intro:false},
-  {name:'박예정',intro:false},{name:'양은솔',intro:false},{name:'문보람',intro:false},
-  {name:'주희중',intro:true},{name:'신현영',intro:false},{name:'김민선',intro:false},
-  {name:'이승연',intro:false}
-];
+const DEFAULT_TEAM2 = {
+  male: [
+    {name:'김동언',intro:false},{name:'이재열',intro:false},{name:'문정대',intro:false},
+    {name:'김건하',intro:false},{name:'선세은',intro:true},{name:'김태윤',intro:false},
+    {name:'박인국',intro:false},{name:'조한영',intro:true},{name:'정찬원',intro:false},
+    {name:'박정민',intro:false},{name:'서보현',intro:false},{name:'신민기',intro:false},
+    {name:'이승욱',intro:true},{name:'안병철',intro:false},{name:'조대희',intro:false},
+    {name:'김상우',intro:false},{name:'이승호',intro:false},{name:'임준혁',intro:false}
+  ],
+  female: [
+    {name:'하연서',intro:false},{name:'이애령',intro:false},{name:'고연희',intro:false},
+    {name:'홍정인',intro:false},{name:'박규리',intro:false},{name:'백선우',intro:false},
+    {name:'박예정',intro:false},{name:'양은솔',intro:false},{name:'문보람',intro:false},
+    {name:'주희중',intro:true},{name:'신현영',intro:false},{name:'김민선',intro:false},
+    {name:'이승연',intro:false}
+  ]
+};
 
 function makePerson(name, intro=false) {
   return { name, intro, days: [false,false,false,false,false] };
 }
 
-async function loadData() {
-  const snap = await get(ref(db, DB_PATH));
-  if (snap.exists()) {
-    data = snap.val();
-    // days 배열 보정 (혹시 null 있으면)
-    ['male','female'].forEach(g => {
-      (data[g]||[]).forEach(p => { if(!p.days) p.days=[false,false,false,false,false]; });
-    });
-  } else {
-    data = {
-      male: DEFAULT_MALE.map(p => makePerson(p.name, p.intro)),
-      female: DEFAULT_FEMALE.map(p => makePerson(p.name, p.intro))
+function teamPath(team) { return `siksu/team${team}`; }
+
+async function loadAllTeams() {
+  // 팀2 초기 데이터 확인
+  const snap2 = await get(ref(db, teamPath(2)));
+  if (!snap2.exists()) {
+    const initData = {
+      male: DEFAULT_TEAM2.male.map(p => makePerson(p.name, p.intro)),
+      female: DEFAULT_TEAM2.female.map(p => makePerson(p.name, p.intro))
     };
-    await set(ref(db, DB_PATH), data);
+    await set(ref(db, teamPath(2)), initData);
+    allData[2] = initData;
+  } else {
+    allData[2] = snap2.val();
   }
+
+  // 팀 1,3,4 로드
+  for (const t of [1,3,4]) {
+    const snap = await get(ref(db, teamPath(t)));
+    if (snap.exists()) {
+      allData[t] = snap.val();
+    } else {
+      allData[t] = { male: [], female: [] };
+    }
+  }
+
+  // days 보정
+  [1,2,3,4].forEach(t => {
+    ['male','female'].forEach(g => {
+      (allData[t][g]||[]).forEach(p => {
+        if (!p.days) p.days = [false,false,false,false,false];
+      });
+    });
+  });
+
   render();
   document.getElementById('loading').style.display = 'none';
   document.getElementById('mainContent').style.display = 'block';
 }
 
-function saveData() { set(ref(db, DB_PATH), data); }
+function saveTeam(team) {
+  set(ref(db, teamPath(team)), allData[team]);
+}
+
+function getData() { return allData[currentTeam] || { male: [], female: [] }; }
 
 function render() {
+  updateTabs();
   renderGroup('male', 'maleBody');
   renderGroup('female', 'femaleBody');
   updateSummary();
 }
 
-// 소개 추가 인풋이 열려있는 idx 추적
+function updateTabs() {
+  document.querySelectorAll('.team-tab').forEach((tab, i) => {
+    tab.classList.toggle('active', i + 1 === currentTeam);
+  });
+}
+
 let introOpenState = { male: -1, female: -1 };
 
 function renderGroup(group, tbodyId) {
   const tbody = document.getElementById(tbodyId);
   tbody.innerHTML = '';
-  (data[group]||[]).forEach((person, idx) => {
-    // 일반 행
+  const list = getData()[group] || [];
+
+  list.forEach((person, idx) => {
     const tr = document.createElement('tr');
     if (person.intro) tr.classList.add('intro-row');
 
-    // 이름 셀
     const nameTd = document.createElement('td');
     nameTd.className = 'name-cell';
     nameTd.textContent = person.intro ? `↳ ${person.name}` : person.name;
     tr.appendChild(nameTd);
 
-    // 요일 체크
     DAYS.forEach((_, di) => {
       const td = document.createElement('td');
       const btn = document.createElement('button');
-      btn.className = 'check-btn' + (person.days[di] ? ' checked' : '');
+      btn.className = 'check-btn' + (person.days[di] ? ' checked' : '') + (person.intro ? ' intro-check' : '');
       btn.textContent = person.days[di] ? '○' : '';
-      btn.onclick = () => { toggleDay(group, idx, di); };
+      btn.onclick = () => toggleDay(group, idx, di);
       td.appendChild(btn);
       tr.appendChild(td);
     });
 
-    // 액션 셀
     const actTd = document.createElement('td');
     const actDiv = document.createElement('div');
     actDiv.className = 'action-cell';
 
-    // 소개로 추가 버튼 (소개행 아닌 경우만)
     if (!person.intro) {
       const introBtn = document.createElement('button');
       introBtn.className = 'intro-add-btn';
-      introBtn.textContent = '↳소개';
+      introBtn.textContent = '↳열매';
       introBtn.onclick = (e) => {
         e.stopPropagation();
         introOpenState[group] = idx;
@@ -446,7 +586,6 @@ function renderGroup(group, tbodyId) {
       actDiv.appendChild(introBtn);
     }
 
-    // 삭제 버튼
     const delBtn = document.createElement('button');
     delBtn.className = 'delete-btn';
     delBtn.textContent = '×';
@@ -457,7 +596,6 @@ function renderGroup(group, tbodyId) {
     tr.appendChild(actTd);
     tbody.appendChild(tr);
 
-    // 소개 추가 인풋 행 (해당 idx 바로 아래)
     if (!person.intro && introOpenState[group] === idx) {
       const inputTr = document.createElement('tr');
       inputTr.className = 'intro-input-row';
@@ -469,9 +607,8 @@ function renderGroup(group, tbodyId) {
 
       const inp = document.createElement('input');
       inp.type = 'text';
-      inp.placeholder = `${person.name}의 소개 이름`;
+      inp.placeholder = `${person.name}의 열매 이름`;
       inp.maxLength = 10;
-      inp.autofocus = true;
 
       const confirmBtn = document.createElement('button');
       confirmBtn.className = 'intro-confirm-btn';
@@ -479,9 +616,9 @@ function renderGroup(group, tbodyId) {
       confirmBtn.onclick = () => {
         const name = inp.value.trim();
         if (!name) return;
-        data[group].splice(idx + 1, 0, makePerson(name, true));
+        getData()[group].splice(idx + 1, 0, makePerson(name, true));
         introOpenState[group] = -1;
-        saveData();
+        saveTeam(currentTeam);
         render();
       };
 
@@ -501,48 +638,58 @@ function renderGroup(group, tbodyId) {
       inputTd.appendChild(wrap);
       inputTr.appendChild(inputTd);
       tbody.appendChild(inputTr);
-
       setTimeout(() => inp.focus(), 50);
     }
   });
 }
 
 function toggleDay(group, idx, di) {
-  data[group][idx].days[di] = !data[group][idx].days[di];
-  saveData();
+  getData()[group][idx].days[di] = !getData()[group][idx].days[di];
+  saveTeam(currentTeam);
   render();
 }
 
 function updateSummary() {
-  const all = [...(data.male||[]), ...(data.female||[])];
+  const d = getData();
+  const all = [...(d.male||[]), ...(d.female||[])];
+  const fruits = all.filter(p => p.intro);
+
   DAYS.forEach((_, di) => {
     document.getElementById(`sum-${di}`).textContent = all.filter(p => p.days[di]).length;
+    document.getElementById(`fruit-${di}`).textContent = fruits.filter(p => p.days[di]).length;
   });
 }
+
+window.switchTeam = function(team) {
+  introOpenState = { male: -1, female: -1 };
+  currentTeam = team;
+  render();
+};
 
 window.addPerson = function(group) {
   const inp = document.getElementById(group === 'male' ? 'maleInput' : 'femaleInput');
   const name = inp.value.trim();
   if (!name) return;
-  if (!data[group]) data[group] = [];
-  data[group].push(makePerson(name, false));
+  if (!allData[currentTeam]) allData[currentTeam] = { male: [], female: [] };
+  if (!allData[currentTeam][group]) allData[currentTeam][group] = [];
+  allData[currentTeam][group].push(makePerson(name, false));
   inp.value = '';
-  saveData();
+  saveTeam(currentTeam);
   render();
 };
 
 window.deletePerson = function(group, idx) {
-  const name = data[group][idx].name;
+  const name = getData()[group][idx].name;
   if (!confirm(`"${name}" 을(를) 삭제할까요?`)) return;
-  data[group].splice(idx, 1);
-  saveData();
+  getData()[group].splice(idx, 1);
+  saveTeam(currentTeam);
   render();
 };
 
 document.getElementById('maleInput').addEventListener('keydown', e => { if(e.key==='Enter') window.addPerson('male'); });
 document.getElementById('femaleInput').addEventListener('keydown', e => { if(e.key==='Enter') window.addPerson('female'); });
 
-loadData();
+loadAllTeams();
 </script>
 </body>
 </html>
