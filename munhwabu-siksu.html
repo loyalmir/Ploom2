@@ -607,11 +607,12 @@ function render() {
 
 function updateTabs() {
   const tabs = document.querySelectorAll('.team-tab');
-  // 탭 순서: 전체(0), 1팀(1), 2팀(2), 3팀(3), 4팀(4)
   tabs.forEach((tab, i) => {
     tab.classList.toggle('active', i === currentTeam);
   });
 }
+
+let introOpenState = { male: -1, female: -1 };
 
 window.switchTeam = function(team) {
   introOpenState = { male: -1, female: -1 };
@@ -622,11 +623,17 @@ window.switchTeam = function(team) {
 function renderDashboard() {
   const teamGrid = document.getElementById('dashTeamGrid');
   teamGrid.innerHTML = '';
+
+  let grandTotal = 0, grandFruit = 0;
+
   [1,2,3,4].forEach(t => {
     const d = allData[t] || { male:[], female:[] };
     const all = [...(d.male||[]), ...(d.female||[])];
     const fruit = all.filter(p => p.intro).length;
     const total = all.length;
+    grandTotal += total;
+    grandFruit += fruit;
+
     const card = document.createElement('div');
     card.className = 'dash-team-card';
     card.innerHTML = `
@@ -644,6 +651,23 @@ function renderDashboard() {
     card.onclick = () => window.switchTeam(t);
     teamGrid.appendChild(card);
   });
+
+  // 전체 합산 카드
+  const totalCard = document.createElement('div');
+  totalCard.className = 'dash-total-card';
+  totalCard.innerHTML = `
+    <div class="tc-label">✨ 전체 합산</div>
+    <div class="tc-row">
+      <div class="tc-col">
+        <div class="tc-sub">👥 총 인원</div>
+        <div class="tc-num">${grandTotal}<span class="tc-unit">명</span></div>
+      </div>
+      <div class="tc-col fruit-col">
+        <div class="tc-sub">🌱 열매</div>
+        <div class="tc-num">${grandFruit}<span class="tc-unit">명</span></div>
+      </div>
+    </div>`;
+  teamGrid.after(totalCard);
 }
 
 function updateSummary() {
@@ -656,8 +680,6 @@ function updateSummary() {
     document.getElementById(`fruit-${di}`).textContent = fruits.filter(p => p.days[di]).length;
   });
 }
-
-let introOpenState = { male: -1, female: -1 };
 
 function renderGroup(group, tbodyId) {
   const tbody = document.getElementById(tbodyId);
