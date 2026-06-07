@@ -362,94 +362,14 @@
     font-size: 0.82rem;
   }
 
-  /* 0팀 대시보드 */
+  /* 전체 대시보드 */
   #dashboardContent { display: none; }
-
-  .dash-total-card {
-    background: var(--surface);
-    border: 2px solid var(--accent);
-    border-radius: 14px;
-    padding: 16px;
-    margin-bottom: 14px;
-  }
-  .dash-total-card .dtc-label {
-    font-size: 0.7rem;
-    color: var(--text-sub);
-    font-weight: 700;
-    letter-spacing: 0.05em;
-    margin-bottom: 10px;
-  }
-  .dash-big-row {
-    display: flex;
-    gap: 10px;
-  }
-  .dash-big-num {
-    flex: 1;
-    text-align: center;
-    background: var(--bg);
-    border-radius: 10px;
-    padding: 12px 0;
-  }
-  .dash-big-num .dbn-label {
-    font-size: 0.65rem;
-    color: var(--text-sub);
-    margin-bottom: 4px;
-  }
-  .dash-big-num .dbn-val {
-    font-size: 2.2rem;
-    font-weight: 700;
-    color: var(--accent);
-    line-height: 1;
-  }
-  .dash-big-num.fruit-big { background: var(--fruit-light); }
-  .dash-big-num.fruit-big .dbn-val { color: var(--fruit); }
-  .dash-big-num.fruit-big .dbn-label { color: var(--fruit); }
-
-  .dash-section-label {
-    font-size: 0.72rem;
-    font-weight: 700;
-    color: var(--text-sub);
-    letter-spacing: 0.05em;
-    margin: 14px 0 8px;
-  }
-
-  .dash-day-grid {
-    display: flex;
-    gap: 6px;
-    margin-bottom: 14px;
-  }
-  .dash-day-card {
-    flex: 1;
-    background: var(--surface);
-    border: 1.5px solid var(--border);
-    border-radius: 10px;
-    padding: 8px 4px;
-    text-align: center;
-  }
-  .dash-day-card .ddc-day {
-    font-size: 0.65rem;
-    color: var(--text-sub);
-    margin-bottom: 4px;
-    font-weight: 600;
-  }
-  .dash-day-card .ddc-total {
-    font-size: 1.1rem;
-    font-weight: 700;
-    color: var(--accent);
-    line-height: 1;
-  }
-  .dash-day-card .ddc-fruit {
-    font-size: 0.68rem;
-    color: var(--fruit);
-    margin-top: 3px;
-    font-weight: 600;
-  }
 
   .dash-team-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 12px;
-    margin-top: 16px;
+    margin-top: 4px;
   }
   .dash-team-card {
     background: var(--surface);
@@ -467,44 +387,35 @@
     margin-bottom: 12px;
     letter-spacing: 0.04em;
   }
-  .dash-team-card .tc-row {
-    display: flex;
-    align-items: center;
-    gap: 0;
-  }
+  .dash-team-card .tc-row { display: flex; gap: 8px; }
   .dash-team-card .tc-col {
     flex: 1;
     text-align: center;
+    background: var(--bg);
+    border-radius: 10px;
+    padding: 10px 6px;
   }
-  .dash-team-card .tc-divider {
-    width: 1px;
-    height: 36px;
-    background: var(--border);
-    flex-shrink: 0;
-  }
+  .dash-team-card .tc-col.fruit-col { background: var(--fruit-light); }
   .dash-team-card .tc-sub {
     font-size: 0.62rem;
     color: var(--text-sub);
-    margin-bottom: 4px;
+    margin-bottom: 5px;
+    font-weight: 500;
   }
-  .dash-team-card .tc-total {
-    font-size: 1.6rem;
+  .dash-team-card .fruit-col .tc-sub { color: var(--fruit); }
+  .dash-team-card .tc-num {
+    font-size: 1.8rem;
     font-weight: 700;
     color: var(--accent);
     line-height: 1;
   }
-  .dash-team-card .tc-fruit-num {
-    font-size: 1.6rem;
-    font-weight: 700;
-    color: var(--fruit);
-    line-height: 1;
-  }
+  .dash-team-card .fruit-col .tc-num { color: var(--fruit); }
   .dash-team-card .tc-unit {
-    font-size: 0.7rem;
+    font-size: 0.65rem;
     font-weight: 400;
     margin-left: 1px;
+    vertical-align: bottom;
   }
-  .dash-team-card .fruit-col .tc-sub { color: var(--fruit); }
 
   @media (max-width: 480px) {
     .check-btn { width: 27px; height: 27px; font-size: 0.85rem; }
@@ -671,7 +582,6 @@ async function loadAllTeams() {
 
   render();
   document.getElementById('loading').style.display = 'none';
-  document.getElementById('mainContent').style.display = 'block';
 }
 
 function saveTeam(team) {
@@ -704,7 +614,6 @@ function updateTabs() {
 }
 
 function renderDashboard() {
-  // 팀별 카드만
   const teamGrid = document.getElementById('dashTeamGrid');
   teamGrid.innerHTML = '';
   [1,2,3,4].forEach(t => {
@@ -719,12 +628,11 @@ function renderDashboard() {
       <div class="tc-row">
         <div class="tc-col">
           <div class="tc-sub">👥 총 인원</div>
-          <div class="tc-total">${total}<span class="tc-unit">명</span></div>
+          <div class="tc-num">${total}<span class="tc-unit">명</span></div>
         </div>
-        <div class="tc-divider"></div>
         <div class="tc-col fruit-col">
           <div class="tc-sub">🌱 열매</div>
-          <div class="tc-fruit-num">${fruit}<span class="tc-unit">명</span></div>
+          <div class="tc-num">${fruit}<span class="tc-unit">명</span></div>
         </div>
       </div>`;
     card.onclick = () => window.switchTeam(t);
