@@ -6,141 +6,455 @@
 <title>문화부 집회 주간 식수 인원 파악</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap');
+
   * { box-sizing: border-box; margin: 0; padding: 0; }
+
   :root {
-    --bg: #f5f0e8; --surface: #fffdf7; --border: #d6c9a8;
-    --accent: #c8783a; --accent-light: #f0dcc0;
-    --text: #2c2416; --text-sub: #7a6a50;
-    --male-header: #b8d0e8; --female-header: #f5c8c8;
+    --bg: #f5f0e8;
+    --surface: #fffdf7;
+    --border: #d6c9a8;
+    --accent: #c8783a;
+    --accent-light: #f0dcc0;
+    --text: #2c2416;
+    --text-sub: #7a6a50;
+    --male-header: #b8d0e8;
+    --female-header: #f5c8c8;
     --row-hover: rgba(200,120,58,0.07);
-    --fruit: #6ab04c; --fruit-light: #e8f5e0;
-    --meal: #5b8dd9; --meal-light: #e0eaff;
+    --fruit: #6ab04c;
+    --fruit-light: #e8f5e0;
+    --meal: #3a86c8;
+    --meal-light: #dbecf7;
+    --divider: #c4b896;
   }
-  body { font-family:'Noto Sans KR',sans-serif; background:var(--bg); min-height:100vh; padding:0 0 60px; color:var(--text); }
 
-  /* 헤더 */
-  .header { background:var(--surface); border-bottom:1.5px solid var(--border); padding:18px 16px 0; position:sticky; top:0; z-index:100; box-shadow:0 2px 8px rgba(0,0,0,0.06); }
-  h1 { text-align:center; font-size:1.1rem; font-weight:700; letter-spacing:-0.02em; margin-bottom:14px; color:var(--text); }
+  body {
+    font-family: 'Noto Sans KR', sans-serif;
+    background: var(--bg);
+    min-height: 100vh;
+    padding: 0 0 60px;
+    color: var(--text);
+  }
 
-  /* 탭 */
-  .team-tabs { display:flex; gap:4px; overflow-x:auto; scrollbar-width:none; }
-  .team-tabs::-webkit-scrollbar { display:none; }
-  .team-tab { flex-shrink:0; padding:8px 20px; border-radius:10px 10px 0 0; border:1.5px solid var(--border); border-bottom:none; background:var(--bg); color:var(--text-sub); font-family:inherit; font-size:0.82rem; font-weight:600; cursor:pointer; transition:all 0.15s; position:relative; bottom:-1px; }
-  .team-tab:hover { background:var(--accent-light); color:var(--accent); }
-  .team-tab.active { background:var(--surface); color:var(--accent); border-bottom-color:var(--surface); }
+  .header {
+    background: var(--surface);
+    border-bottom: 1.5px solid var(--border);
+    padding: 18px 16px 0;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  }
 
-  .content { padding:16px 16px 0; }
-  #loading { text-align:center; padding:60px; color:var(--text-sub); font-size:0.85rem; }
+  h1 {
+    text-align: center;
+    font-size: 1.1rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin-bottom: 14px;
+    color: var(--text);
+  }
 
-  /* ── 대시보드 ── */
-  #dashboardContent { display:none; }
-  .dash-team-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:4px; }
+  .team-tabs {
+    display: flex;
+    gap: 4px;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .team-tabs::-webkit-scrollbar { display: none; }
 
-  .dash-team-card { background:var(--surface); border:1.5px solid var(--border); border-radius:14px; padding:14px 12px; cursor:pointer; transition:all 0.15s; }
-  .dash-team-card:hover { border-color:var(--accent); background:var(--accent-light); }
-  .dash-team-card .tc-label { font-size:0.78rem; color:var(--text-sub); font-weight:700; margin-bottom:10px; }
-  .dash-team-card .tc-row { display:flex; gap:6px; }
-  .dash-team-card .tc-col { flex:1; text-align:center; background:var(--bg); border-radius:8px; padding:8px 4px; }
-  .dash-team-card .tc-col.attend-col { background:#eef4ff; }
-  .dash-team-card .tc-col.fruit-col { background:var(--fruit-light); }
-  .dash-team-card .tc-sub { font-size:0.58rem; color:var(--text-sub); margin-bottom:4px; font-weight:500; }
-  .dash-team-card .attend-col .tc-sub { color:var(--meal); }
-  .dash-team-card .fruit-col .tc-sub { color:var(--fruit); }
-  .dash-team-card .tc-num { font-size:1.5rem; font-weight:700; color:var(--accent); line-height:1; }
-  .dash-team-card .attend-col .tc-num { color:var(--meal); }
-  .dash-team-card .fruit-col .tc-num { color:var(--fruit); }
-  .dash-team-card .tc-unit { font-size:0.6rem; font-weight:400; vertical-align:bottom; }
+  .team-tab {
+    flex-shrink: 0;
+    padding: 8px 20px;
+    border-radius: 10px 10px 0 0;
+    border: 1.5px solid var(--border);
+    border-bottom: none;
+    background: var(--bg);
+    color: var(--text-sub);
+    font-family: inherit;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s;
+    position: relative;
+    bottom: -1px;
+  }
+  .team-tab:hover { background: var(--accent-light); color: var(--accent); }
+  .team-tab.active {
+    background: var(--surface);
+    color: var(--accent);
+    border-color: var(--border);
+    border-bottom-color: var(--surface);
+  }
+
+  .content { padding: 16px 16px 0; }
+
+  /* 요약 카드 */
+  .summary-area { margin-bottom: 16px; }
+  .summary-label {
+    font-size: 0.72rem;
+    color: var(--text-sub);
+    margin-bottom: 6px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+  }
+  .summary-bar { display: flex; gap: 6px; flex-wrap: wrap; }
+  .summary-card {
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    padding: 7px 12px;
+    text-align: center;
+    min-width: 54px;
+    flex: 1;
+  }
+  .summary-card.fruit-card { border-color: var(--fruit); background: var(--fruit-light); }
+  .summary-card .day-label { font-size: 0.65rem; color: var(--text-sub); margin-bottom: 2px; }
+  .summary-card.fruit-card .day-label { color: var(--fruit); }
+  .summary-card .day-count { font-size: 1.05rem; font-weight: 700; color: var(--accent); }
+  .summary-card.fruit-card .day-count { color: var(--fruit); }
+  .summary-card .day-count .meal-part { color: var(--meal); }
+  .summary-card.fruit-card .day-count .meal-part { color: var(--meal); }
+  .summary-hint { font-size: 0.6rem; color: var(--text-sub); margin-top: 1px; }
+
+  .summary-divider { display: flex; align-items: center; gap: 8px; margin: 10px 0 6px; }
+  .summary-divider span {
+    font-size: 0.72rem; color: var(--fruit); font-weight: 700;
+    letter-spacing: 0.04em; white-space: nowrap;
+  }
+  .summary-divider::before, .summary-divider::after {
+    content: ''; flex: 1; height: 1px; background: #d4e8c8;
+  }
+
+  /* 테이블 */
+  .table-section {
+    background: var(--surface);
+    border-radius: 14px;
+    border: 1.5px solid var(--border);
+    overflow: hidden;
+    margin-bottom: 14px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  }
+  .section-header {
+    padding: 9px 14px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    color: var(--text-sub);
+  }
+  .section-header.male { background: var(--male-header); }
+  .section-header.female { background: var(--female-header); }
+
+  table { width: 100%; border-collapse: collapse; }
+
+  thead th {
+    padding: 6px 2px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: var(--text-sub);
+    border-bottom: 1.5px solid var(--border);
+    text-align: center;
+  }
+  thead th.name-col { text-align: left; padding-left: 12px; width: 78px; }
+  thead tr.day-head th { font-size: 0.72rem; padding-bottom: 2px; }
+  thead tr.sub-head th { font-size: 0.62rem; padding-top: 2px; font-weight: 500; color: var(--text-sub); }
+  thead tr.sub-head th.sub-meal { color: var(--meal); }
+
+  /* 요일 그룹 사이 구분선 */
+  .day-group-start { border-left: 2px solid var(--divider); }
+
+  tbody tr { border-bottom: 1px solid #ede6d6; transition: background 0.15s; }
+  tbody tr:last-child { border-bottom: none; }
+  tbody tr:hover { background: var(--row-hover); }
+
+  td {
+    padding: 7px 2px;
+    text-align: center;
+    font-size: 0.82rem;
+  }
+  td.name-cell {
+    text-align: left;
+    padding-left: 12px;
+    font-weight: 500;
+    white-space: nowrap;
+  }
+  tr.intro-row td.name-cell {
+    color: var(--fruit);
+    font-size: 0.76rem;
+    padding-left: 20px;
+    font-weight: 400;
+  }
+
+  /* 참석 체크 (주황) */
+  .check-btn {
+    width: 28px;
+    height: 28px;
+    border-radius: 7px;
+    border: 1.5px solid var(--border);
+    background: transparent;
+    cursor: pointer;
+    font-size: 0.85rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s;
+    color: transparent;
+  }
+  .check-btn.checked {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: white;
+  }
+  .check-btn.intro-check.checked {
+    background: var(--fruit);
+    border-color: var(--fruit);
+  }
+  /* 식사 체크 (파랑) */
+  .check-btn.meal-btn.checked {
+    background: var(--meal);
+    border-color: var(--meal);
+    color: white;
+  }
+  .check-btn.meal-btn.intro-check.checked {
+    background: #4a98b8;
+    border-color: #4a98b8;
+  }
+  .check-btn:active { transform: scale(0.9); }
+
+  .action-cell {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 4px;
+    padding-right: 8px;
+    min-width: 66px;
+  }
+  .delete-btn {
+    width: 20px; height: 20px;
+    border-radius: 50%;
+    border: none;
+    background: #f0c0c0;
+    color: #a03030;
+    font-size: 0.72rem;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: background 0.15s;
+  }
+  .delete-btn:hover { background: #e09090; }
+
+  .intro-add-btn {
+    font-size: 0.65rem;
+    padding: 3px 5px;
+    border-radius: 5px;
+    border: 1px dashed #a8cc90;
+    background: none;
+    color: var(--fruit);
+    cursor: pointer;
+    white-space: nowrap;
+    display: inline-flex;
+    transition: all 0.15s;
+  }
+  .intro-add-btn:hover { background: var(--fruit-light); }
+
+  .intro-input-row td { padding: 6px 8px 6px 20px; background: #f2f9ee; }
+  .intro-input-wrap { display: flex; gap: 6px; align-items: center; }
+  .intro-input-wrap input {
+    flex: 1;
+    padding: 5px 8px;
+    border: 1.5px solid #a8cc90;
+    border-radius: 7px;
+    font-family: inherit;
+    font-size: 0.78rem;
+    background: white;
+    color: var(--text);
+    outline: none;
+  }
+  .intro-input-wrap input:focus { border-color: var(--fruit); }
+  .intro-confirm-btn {
+    padding: 5px 10px;
+    background: var(--fruit);
+    color: white;
+    border: none;
+    border-radius: 7px;
+    font-family: inherit;
+    font-size: 0.78rem;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .intro-cancel-btn {
+    padding: 5px 8px;
+    background: none;
+    color: var(--text-sub);
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    font-family: inherit;
+    font-size: 0.78rem;
+    cursor: pointer;
+  }
+
+  .add-row {
+    padding: 9px 12px;
+    display: flex;
+    gap: 8px;
+    border-top: 1px dashed var(--border);
+  }
+  .add-row input {
+    flex: 1;
+    padding: 7px 10px;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 0.82rem;
+    background: var(--bg);
+    color: var(--text);
+    outline: none;
+  }
+  .add-row input:focus { border-color: var(--accent); }
+  .add-row button {
+    padding: 7px 14px;
+    background: var(--accent);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .add-row button:hover { background: #a85f25; }
+
+  #loading {
+    text-align: center;
+    padding: 60px;
+    color: var(--text-sub);
+    font-size: 0.85rem;
+  }
+
+  /* 대시보드 */
+  #dashboardContent { display: none; }
+
+  .dash-team-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-top: 4px;
+  }
+  .dash-team-card {
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: 14px;
+    padding: 16px 14px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .dash-team-card:hover { border-color: var(--accent); background: var(--accent-light); }
+  .dash-team-card .tc-label {
+    font-size: 0.78rem;
+    color: var(--text-sub);
+    font-weight: 700;
+    margin-bottom: 12px;
+    letter-spacing: 0.04em;
+  }
+  .dash-team-card .tc-row { display: flex; gap: 8px; }
+  .dash-team-card .tc-col {
+    flex: 1;
+    text-align: center;
+    background: var(--bg);
+    border-radius: 10px;
+    padding: 10px 6px;
+  }
+  .dash-team-card .tc-col.fruit-col { background: var(--fruit-light); }
+  .dash-team-card .tc-sub {
+    font-size: 0.62rem;
+    color: var(--text-sub);
+    margin-bottom: 5px;
+    font-weight: 500;
+  }
+  .dash-team-card .fruit-col .tc-sub { color: var(--fruit); }
+  .dash-team-card .tc-num {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--accent);
+    line-height: 1;
+  }
+  .dash-team-card .fruit-col .tc-num { color: var(--fruit); }
+  .dash-team-card .tc-unit {
+    font-size: 0.65rem;
+    font-weight: 400;
+    margin-left: 1px;
+    vertical-align: bottom;
+  }
 
   /* 전체 합산 카드 */
-  .dash-total-card { margin-top:12px; background:var(--surface); border:2px solid var(--accent); border-radius:14px; padding:16px 14px; }
-  .dash-total-card .tc-label { font-size:0.85rem; font-weight:700; color:var(--accent); margin-bottom:12px; }
-  .dash-total-card .tc-row { display:flex; gap:8px; }
-  .dash-total-card .tc-col { flex:1; text-align:center; background:var(--bg); border-radius:10px; padding:12px 6px; }
-  .dash-total-card .attend-col { background:#eef4ff; }
-  .dash-total-card .fruit-col { background:var(--fruit-light); }
-  .dash-total-card .tc-sub { font-size:0.65rem; color:var(--text-sub); margin-bottom:5px; }
-  .dash-total-card .attend-col .tc-sub { color:var(--meal); }
-  .dash-total-card .fruit-col .tc-sub { color:var(--fruit); }
-  .dash-total-card .tc-num { font-size:2rem; font-weight:700; color:var(--accent); line-height:1; }
-  .dash-total-card .attend-col .tc-num { color:var(--meal); }
-  .dash-total-card .fruit-col .tc-num { color:var(--fruit); }
-  .dash-total-card .tc-unit { font-size:0.68rem; font-weight:400; vertical-align:bottom; }
+  .dash-total-card {
+    margin-top: 14px;
+    background: var(--surface);
+    border: 2px solid var(--accent);
+    border-radius: 14px;
+    padding: 16px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+  }
+  .dash-total-card .tc-label {
+    font-size: 0.9rem;
+    font-weight: 700;
+    margin-bottom: 12px;
+    color: var(--accent);
+  }
+  .dash-total-card .tc-row { display: flex; gap: 10px; }
+  .dash-total-card .tc-col {
+    flex: 1;
+    text-align: center;
+    background: var(--bg);
+    border-radius: 10px;
+    padding: 12px;
+  }
+  .dash-total-card .tc-col.fruit-col { background: var(--fruit-light); }
+  .dash-total-card .tc-sub { font-size: 0.65rem; color: var(--text-sub); margin-bottom: 5px; font-weight: 500; }
+  .dash-total-card .fruit-col .tc-sub { color: var(--fruit); }
+  .dash-total-card .tc-num { font-size: 2.2rem; font-weight: 700; color: var(--accent); line-height: 1; }
+  .dash-total-card .fruit-col .tc-num { color: var(--fruit); }
+  .dash-total-card .tc-unit { font-size: 0.7rem; font-weight: 400; margin-left: 1px; }
 
-  /* ── 팀별 요약 카드 ── */
-  .summary-area { margin-bottom:14px; }
-  .summary-label { font-size:0.72rem; color:var(--text-sub); margin-bottom:6px; font-weight:600; letter-spacing:0.04em; }
-  .summary-bar { display:flex; gap:5px; }
-  .summary-card { background:var(--surface); border:1.5px solid var(--border); border-radius:10px; padding:6px 8px; text-align:center; flex:1; }
-  .summary-card.fruit-card { border-color:var(--fruit); background:var(--fruit-light); }
-  .summary-card .day-label { font-size:0.62rem; color:var(--text-sub); margin-bottom:2px; }
-  .summary-card.fruit-card .day-label { color:var(--fruit); }
-  .summary-card .day-count { font-size:1rem; font-weight:700; color:var(--accent); }
-  .summary-card.fruit-card .day-count { color:var(--fruit); }
-  .summary-divider { display:flex; align-items:center; gap:8px; margin:8px 0 5px; }
-  .summary-divider span { font-size:0.7rem; color:var(--fruit); font-weight:700; white-space:nowrap; }
-  .summary-divider::before,.summary-divider::after { content:''; flex:1; height:1px; background:#d4e8c8; }
+  /* 식수 현황 (요일별) */
+  .dash-meal-summary {
+    margin-top: 14px;
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: 14px;
+    padding: 16px;
+  }
+  .dash-meal-summary h3 {
+    font-size: 0.85rem;
+    margin-bottom: 10px;
+    color: var(--text);
+    font-weight: 700;
+  }
+  .dash-days {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 8px;
+  }
+  .dash-day-card {
+    background: var(--bg);
+    border-radius: 10px;
+    text-align: center;
+    padding: 10px 4px;
+  }
+  .dash-day-card.meal { background: var(--meal-light); }
+  .dash-day-card.fruit { background: var(--fruit-light); }
+  .dash-day-card .day { font-size: 0.7rem; color: var(--text-sub); margin-bottom: 3px; }
+  .dash-day-card .count { font-size: 1.4rem; font-weight: 700; color: var(--accent); line-height: 1; }
+  .dash-day-card.meal .count { color: var(--meal); }
+  .dash-day-card.fruit .count { color: var(--fruit); }
 
-  /* ── 테이블 ── */
-  .table-section { background:var(--surface); border-radius:14px; border:1.5px solid var(--border); overflow:hidden; margin-bottom:14px; box-shadow:0 2px 8px rgba(0,0,0,0.05); }
-  .section-header { padding:9px 14px; font-size:0.78rem; font-weight:700; color:var(--text-sub); }
-  .section-header.male { background:var(--male-header); }
-  .section-header.female { background:var(--female-header); }
-  table { width:100%; border-collapse:collapse; }
-
-  /* 헤더 2줄 */
-  thead th { padding:5px 2px; font-size:0.7rem; font-weight:600; color:var(--text-sub); text-align:center; border-bottom:1px solid var(--border); }
-  thead th.name-col { text-align:left; padding-left:12px; width:80px; font-size:0.72rem; }
-  thead tr.row1 th { border-bottom:none; padding-bottom:2px; }
-  thead tr.row2 th { border-top:none; padding-top:2px; font-size:0.62rem; color:#aaa; }
-  thead tr.row2 th.attend-h { color:var(--accent); }
-  thead tr.row2 th.meal-h { color:var(--meal); }
-
-  /* 요일 구분선: 각 요일 그룹 오른쪽 */
-  .day-sep { border-right:2px solid var(--border) !important; }
-
-  tbody tr { border-bottom:1px solid #ede6d6; transition:background 0.15s; }
-  tbody tr:last-child { border-bottom:none; }
-  tbody tr:hover { background:var(--row-hover); }
-  td { padding:7px 2px; text-align:center; font-size:0.82rem; }
-  td.name-cell { text-align:left; padding-left:12px; font-weight:500; white-space:nowrap; }
-  tr.intro-row td.name-cell { color:var(--fruit); font-size:0.76rem; padding-left:22px; font-weight:400; }
-  td.day-sep { border-right:2px solid var(--border); }
-
-  /* 체크 버튼 */
-  .check-btn { width:28px; height:28px; border-radius:7px; border:1.5px solid var(--border); background:transparent; cursor:pointer; font-size:0.85rem; display:inline-flex; align-items:center; justify-content:center; transition:all 0.15s; color:transparent; }
-  .check-btn.attend-btn.checked { background:var(--accent); border-color:var(--accent); color:white; }
-  .check-btn.attend-btn.intro-check.checked { background:var(--fruit); border-color:var(--fruit); }
-  .check-btn.meal-btn.checked { background:var(--meal); border-color:var(--meal); color:white; }
-  .check-btn.meal-btn.intro-check.checked { background:#3a7a3a; border-color:#3a7a3a; }
-  .check-btn:active { transform:scale(0.9); }
-
-  /* 액션 셀 */
-  .action-cell { display:flex; align-items:center; justify-content:flex-end; gap:3px; padding-right:6px; min-width:62px; }
-  .delete-btn { width:20px; height:20px; border-radius:50%; border:none; background:#f0c0c0; color:#a03030; font-size:0.72rem; cursor:pointer; display:inline-flex; align-items:center; justify-content:center; flex-shrink:0; transition:background 0.15s; }
-  .delete-btn:hover { background:#e09090; }
-  .intro-add-btn { font-size:0.62rem; padding:3px 5px; border-radius:5px; border:1px dashed #a8cc90; background:none; color:var(--fruit); cursor:pointer; white-space:nowrap; display:inline-flex; transition:all 0.15s; }
-  .intro-add-btn:hover { background:var(--fruit-light); }
-
-  /* 열매 추가 인풋 */
-  .intro-input-row td { padding:6px 8px 6px 22px; background:#f2f9ee; }
-  .intro-input-wrap { display:flex; gap:6px; align-items:center; }
-  .intro-input-wrap input { flex:1; padding:5px 8px; border:1.5px solid #a8cc90; border-radius:7px; font-family:inherit; font-size:0.78rem; background:white; color:var(--text); outline:none; }
-  .intro-input-wrap input:focus { border-color:var(--fruit); }
-  .intro-confirm-btn { padding:5px 10px; background:var(--fruit); color:white; border:none; border-radius:7px; font-family:inherit; font-size:0.78rem; font-weight:600; cursor:pointer; }
-  .intro-cancel-btn { padding:5px 8px; background:none; color:var(--text-sub); border:1px solid var(--border); border-radius:7px; font-family:inherit; font-size:0.78rem; cursor:pointer; }
-
-  /* 이름 추가 */
-  .add-row { padding:9px 12px; display:flex; gap:8px; border-top:1px dashed var(--border); }
-  .add-row input { flex:1; padding:7px 10px; border:1.5px solid var(--border); border-radius:8px; font-family:inherit; font-size:0.82rem; background:var(--bg); color:var(--text); outline:none; }
-  .add-row input:focus { border-color:var(--accent); }
-  .add-row button { padding:7px 14px; background:var(--accent); color:white; border:none; border-radius:8px; font-family:inherit; font-size:0.82rem; font-weight:600; cursor:pointer; }
-  .add-row button:hover { background:#a85f25; }
-
-  @media (max-width:480px) {
-    .check-btn { width:24px; height:24px; font-size:0.75rem; }
-    td { padding:6px 1px; }
-    td.name-cell { padding-left:8px; font-size:0.75rem; width:72px; }
-    .team-tab { padding:8px 12px; }
+  @media (max-width: 480px) {
+    .check-btn { width: 26px; height: 26px; font-size: 0.8rem; }
+    td { padding: 6px 1px; }
+    td.name-cell { padding-left: 9px; font-size: 0.76rem; }
+    thead th.name-col { width: 64px; padding-left: 9px; }
+    .team-tab { padding: 8px 14px; }
   }
 </style>
 </head>
@@ -148,7 +462,7 @@
 
 <div class="header">
   <h1>문화부 집회 주간 식수 인원 파악</h1>
-  <div class="team-tabs">
+  <div class="team-tabs" id="teamTabs">
     <button class="team-tab active" onclick="switchTeam(0)">전체</button>
     <button class="team-tab" onclick="switchTeam(1)">1팀</button>
     <button class="team-tab" onclick="switchTeam(2)">2팀</button>
@@ -165,24 +479,26 @@
     <div class="dash-team-grid" id="dashTeamGrid"></div>
   </div>
 
-  <!-- 팀별 내용 -->
   <div id="mainContent" style="display:none">
+
+    <!-- 팀별 요약 (참석/식사) -->
     <div class="summary-area">
-      <div class="summary-label">참석 인원</div>
-      <div class="summary-bar">
-        <div class="summary-card"><div class="day-label">월</div><div class="day-count" id="att-0">-</div></div>
-        <div class="summary-card"><div class="day-label">화</div><div class="day-count" id="att-1">-</div></div>
-        <div class="summary-card"><div class="day-label">수</div><div class="day-count" id="att-2">-</div></div>
-        <div class="summary-card"><div class="day-label">목</div><div class="day-count" id="att-3">-</div></div>
-        <div class="summary-card"><div class="day-label">금</div><div class="day-count" id="att-4">-</div></div>
+      <div class="summary-label">전체 식수 <span style="color:var(--accent)">참석</span> / <span style="color:var(--meal)">식사</span></div>
+      <div class="summary-bar" id="totalSummaryBar">
+        <div class="summary-card"><div class="day-label">월</div><div class="day-count" id="sum-0">-</div></div>
+        <div class="summary-card"><div class="day-label">화</div><div class="day-count" id="sum-1">-</div></div>
+        <div class="summary-card"><div class="day-label">수</div><div class="day-count" id="sum-2">-</div></div>
+        <div class="summary-card"><div class="day-label">목</div><div class="day-count" id="sum-3">-</div></div>
+        <div class="summary-card"><div class="day-label">금</div><div class="day-count" id="sum-4">-</div></div>
       </div>
-      <div class="summary-divider"><span>🍱 식사</span></div>
-      <div class="summary-bar">
-        <div class="summary-card fruit-card"><div class="day-label">월</div><div class="day-count" id="meal-0">-</div></div>
-        <div class="summary-card fruit-card"><div class="day-label">화</div><div class="day-count" id="meal-1">-</div></div>
-        <div class="summary-card fruit-card"><div class="day-label">수</div><div class="day-count" id="meal-2">-</div></div>
-        <div class="summary-card fruit-card"><div class="day-label">목</div><div class="day-count" id="meal-3">-</div></div>
-        <div class="summary-card fruit-card"><div class="day-label">금</div><div class="day-count" id="meal-4">-</div></div>
+
+      <div class="summary-divider"><span>🌱 열매</span></div>
+      <div class="summary-bar" id="fruitSummaryBar">
+        <div class="summary-card fruit-card"><div class="day-label">월</div><div class="day-count" id="fruit-0">-</div></div>
+        <div class="summary-card fruit-card"><div class="day-label">화</div><div class="day-count" id="fruit-1">-</div></div>
+        <div class="summary-card fruit-card"><div class="day-label">수</div><div class="day-count" id="fruit-2">-</div></div>
+        <div class="summary-card fruit-card"><div class="day-label">목</div><div class="day-count" id="fruit-3">-</div></div>
+        <div class="summary-card fruit-card"><div class="day-label">금</div><div class="day-count" id="fruit-4">-</div></div>
       </div>
     </div>
 
@@ -191,21 +507,21 @@
       <div class="section-header male">👨 형제</div>
       <table>
         <thead>
-          <tr class="row1">
+          <tr class="day-head">
             <th class="name-col" rowspan="2">이름</th>
-            <th colspan="2" class="day-sep">월</th>
-            <th colspan="2" class="day-sep">화</th>
-            <th colspan="2" class="day-sep">수</th>
-            <th colspan="2" class="day-sep">목</th>
-            <th colspan="2" class="day-sep">금</th>
+            <th colspan="2" class="day-group-start">월</th>
+            <th colspan="2" class="day-group-start">화</th>
+            <th colspan="2" class="day-group-start">수</th>
+            <th colspan="2" class="day-group-start">목</th>
+            <th colspan="2" class="day-group-start">금</th>
             <th rowspan="2"></th>
           </tr>
-          <tr class="row2">
-            <th class="attend-h">참</th><th class="meal-h day-sep">식</th>
-            <th class="attend-h">참</th><th class="meal-h day-sep">식</th>
-            <th class="attend-h">참</th><th class="meal-h day-sep">식</th>
-            <th class="attend-h">참</th><th class="meal-h day-sep">식</th>
-            <th class="attend-h">참</th><th class="meal-h day-sep">식</th>
+          <tr class="sub-head">
+            <th class="day-group-start">참</th><th class="sub-meal">식</th>
+            <th class="day-group-start">참</th><th class="sub-meal">식</th>
+            <th class="day-group-start">참</th><th class="sub-meal">식</th>
+            <th class="day-group-start">참</th><th class="sub-meal">식</th>
+            <th class="day-group-start">참</th><th class="sub-meal">식</th>
           </tr>
         </thead>
         <tbody id="maleBody"></tbody>
@@ -221,21 +537,21 @@
       <div class="section-header female">👩 자매</div>
       <table>
         <thead>
-          <tr class="row1">
+          <tr class="day-head">
             <th class="name-col" rowspan="2">이름</th>
-            <th colspan="2" class="day-sep">월</th>
-            <th colspan="2" class="day-sep">화</th>
-            <th colspan="2" class="day-sep">수</th>
-            <th colspan="2" class="day-sep">목</th>
-            <th colspan="2" class="day-sep">금</th>
+            <th colspan="2" class="day-group-start">월</th>
+            <th colspan="2" class="day-group-start">화</th>
+            <th colspan="2" class="day-group-start">수</th>
+            <th colspan="2" class="day-group-start">목</th>
+            <th colspan="2" class="day-group-start">금</th>
             <th rowspan="2"></th>
           </tr>
-          <tr class="row2">
-            <th class="attend-h">참</th><th class="meal-h day-sep">식</th>
-            <th class="attend-h">참</th><th class="meal-h day-sep">식</th>
-            <th class="attend-h">참</th><th class="meal-h day-sep">식</th>
-            <th class="attend-h">참</th><th class="meal-h day-sep">식</th>
-            <th class="attend-h">참</th><th class="meal-h day-sep">식</th>
+          <tr class="sub-head">
+            <th class="day-group-start">참</th><th class="sub-meal">식</th>
+            <th class="day-group-start">참</th><th class="sub-meal">식</th>
+            <th class="day-group-start">참</th><th class="sub-meal">식</th>
+            <th class="day-group-start">참</th><th class="sub-meal">식</th>
+            <th class="day-group-start">참</th><th class="sub-meal">식</th>
           </tr>
         </thead>
         <tbody id="femaleBody"></tbody>
@@ -245,6 +561,7 @@
         <button onclick="addPerson('female')">추가</button>
       </div>
     </div>
+
   </div>
 </div>
 
@@ -255,9 +572,9 @@ import { getDatabase, ref, set, get } from "https://www.gstatic.com/firebasejs/1
 const app = initializeApp({ databaseURL: "https://k-hary-default-rtdb.firebaseio.com/" });
 const db = getDatabase(app);
 const DAYS = ['월','화','수','목','금'];
+
 let currentTeam = 0;
 let allData = {};
-let introOpenState = { male: -1, female: -1 };
 
 const DEFAULT_TEAM2 = {
   male: [
@@ -278,46 +595,49 @@ const DEFAULT_TEAM2 = {
 };
 
 function makePerson(name, intro=false) {
-  return { name, intro, attend:[false,false,false,false,false], meal:[false,false,false,false,false] };
+  return {
+    name, intro,
+    attend: [false,false,false,false,false],
+    meal: [false,false,false,false,false]
+  };
 }
 
-function teamPath(t) { return `siksu/team${t}`; }
+function teamPath(team) { return `siksu/team${team}`; }
 
 async function loadAllTeams() {
   const snap2 = await get(ref(db, teamPath(2)));
   if (!snap2.exists()) {
-    const init = {
+    const initData = {
       male: DEFAULT_TEAM2.male.map(p => makePerson(p.name, p.intro)),
       female: DEFAULT_TEAM2.female.map(p => makePerson(p.name, p.intro))
     };
-    await set(ref(db, teamPath(2)), init);
-    allData[2] = init;
+    await set(ref(db, teamPath(2)), initData);
+    allData[2] = initData;
   } else {
     allData[2] = snap2.val();
   }
+
   for (const t of [1,3,4]) {
     const snap = await get(ref(db, teamPath(t)));
-    allData[t] = snap.exists() ? snap.val() : { male:[], female:[] };
+    allData[t] = snap.exists() ? snap.val() : { male: [], female: [] };
   }
+
+  // 데이터 보정 (구버전 days -> attend/meal)
   [1,2,3,4].forEach(t => {
     ['male','female'].forEach(g => {
       (allData[t][g]||[]).forEach(p => {
-        if (!p.attend) p.attend = [false,false,false,false,false];
-        if (!p.meal)   p.meal   = [false,false,false,false,false];
-        // 기존 days 필드 마이그레이션
-        if (p.days && !p.attend.some(Boolean)) {
-          p.attend = [...p.days];
-          p.meal   = [...p.days];
-        }
+        if (!p.attend) p.attend = p.days ? [...p.days] : [false,false,false,false,false];
+        if (!p.meal) p.meal = [false,false,false,false,false];
       });
     });
   });
+
   render();
   document.getElementById('loading').style.display = 'none';
 }
 
-function saveTeam(t) { set(ref(db, teamPath(t)), allData[t]); }
-function getData() { return allData[currentTeam] || { male:[], female:[] }; }
+function saveTeam(team) { set(ref(db, teamPath(team)), allData[team]); }
+function getData() { return allData[currentTeam] || { male: [], female: [] }; }
 
 function render() {
   updateTabs();
@@ -340,30 +660,60 @@ function updateTabs() {
   });
 }
 
+function updateSummary() {
+  const d = getData();
+  const all = [...(d.male||[]), ...(d.female||[])];
+  const fruits = all.filter(p => p.intro);
+
+  DAYS.forEach((_, di) => {
+    const att = all.filter(p => p.attend[di]).length;
+    const meal = all.filter(p => p.meal[di]).length;
+    document.getElementById(`sum-${di}`).innerHTML =
+      `${att}<span style="color:var(--text-sub);font-weight:400;font-size:0.85rem">/</span><span class="meal-part">${meal}</span>`;
+
+    const fAtt = fruits.filter(p => p.attend[di]).length;
+    const fMeal = fruits.filter(p => p.meal[di]).length;
+    document.getElementById(`fruit-${di}`).innerHTML =
+      `${fAtt}<span style="color:var(--text-sub);font-weight:400;font-size:0.85rem">/</span><span class="meal-part">${fMeal}</span>`;
+  });
+}
+
+let introOpenState = { male: -1, female: -1 };
+
 window.switchTeam = function(team) {
-  introOpenState = { male:-1, female:-1 };
+  introOpenState = { male: -1, female: -1 };
   currentTeam = team;
   render();
 };
 
-/* ── 대시보드 ── */
 function renderDashboard() {
-  const grid = document.getElementById('dashTeamGrid');
-  grid.innerHTML = '';
+  const teamGrid = document.getElementById('dashTeamGrid');
+  teamGrid.innerHTML = '';
   document.querySelector('.dash-total-card')?.remove();
+  document.querySelector('.dash-meal-summary')?.remove();
 
-  let grandTotal=0, grandAttend=0, grandFruit=0;
+  let grandTotal = 0, grandFruit = 0;
+  const attendCounts = [0,0,0,0,0];
+  const mealCounts = [0,0,0,0,0];
+  const fruitAttendCounts = [0,0,0,0,0];
+  const fruitMealCounts = [0,0,0,0,0];
 
   [1,2,3,4].forEach(t => {
     const d = allData[t] || { male:[], female:[] };
     const all = [...(d.male||[]), ...(d.female||[])];
     const fruits = all.filter(p => p.intro);
-    const total = all.length;
-    const attend = all.reduce((s,p) => s + p.attend.filter(Boolean).length, 0);
-    const fruit  = fruits.length;
-    grandTotal  += total;
-    grandAttend += attend;
-    grandFruit  += fruit;
+
+    grandTotal += all.length;
+    grandFruit += fruits.length;
+
+    all.forEach(p => {
+      (p.attend||[]).forEach((c, di) => { if (c) attendCounts[di]++; });
+      (p.meal||[]).forEach((c, di) => { if (c) mealCounts[di]++; });
+    });
+    fruits.forEach(p => {
+      (p.attend||[]).forEach((c, di) => { if (c) fruitAttendCounts[di]++; });
+      (p.meal||[]).forEach((c, di) => { if (c) fruitMealCounts[di]++; });
+    });
 
     const card = document.createElement('div');
     card.className = 'dash-team-card';
@@ -372,21 +722,18 @@ function renderDashboard() {
       <div class="tc-row">
         <div class="tc-col">
           <div class="tc-sub">👥 총 인원</div>
-          <div class="tc-num">${total}<span class="tc-unit">명</span></div>
-        </div>
-        <div class="tc-col attend-col">
-          <div class="tc-sub">✓ 참석(주간)</div>
-          <div class="tc-num">${attend}<span class="tc-unit">회</span></div>
+          <div class="tc-num">${all.length}<span class="tc-unit">명</span></div>
         </div>
         <div class="tc-col fruit-col">
           <div class="tc-sub">🌱 열매</div>
-          <div class="tc-num">${fruit}<span class="tc-unit">명</span></div>
+          <div class="tc-num">${fruits.length}<span class="tc-unit">명</span></div>
         </div>
       </div>`;
     card.onclick = () => window.switchTeam(t);
-    grid.appendChild(card);
+    teamGrid.appendChild(card);
   });
 
+  // 전체 합산 카드
   const totalCard = document.createElement('div');
   totalCard.className = 'dash-total-card';
   totalCard.innerHTML = `
@@ -396,33 +743,38 @@ function renderDashboard() {
         <div class="tc-sub">👥 총 인원</div>
         <div class="tc-num">${grandTotal}<span class="tc-unit">명</span></div>
       </div>
-      <div class="tc-col attend-col">
-        <div class="tc-sub">✓ 참석(주간)</div>
-        <div class="tc-num">${grandAttend}<span class="tc-unit">회</span></div>
-      </div>
       <div class="tc-col fruit-col">
         <div class="tc-sub">🌱 열매</div>
         <div class="tc-num">${grandFruit}<span class="tc-unit">명</span></div>
       </div>
     </div>`;
-  grid.after(totalCard);
+  teamGrid.after(totalCard);
+
+  // 요일별 식수 현황
+  const mealSummary = document.createElement('div');
+  mealSummary.className = 'dash-meal-summary';
+  mealSummary.innerHTML = `
+    <h3>🙋 전체 참석 현황</h3>
+    <div class="dash-days">
+      ${DAYS.map((day,i)=>`<div class="dash-day-card"><div class="day">${day}</div><div class="count">${attendCounts[i]}</div></div>`).join('')}
+    </div>
+    <h3 style="margin-top:18px;">🍱 전체 식사 현황</h3>
+    <div class="dash-days">
+      ${DAYS.map((day,i)=>`<div class="dash-day-card meal"><div class="day">${day}</div><div class="count">${mealCounts[i]}</div></div>`).join('')}
+    </div>
+    <h3 style="margin-top:18px;">🌱 열매 식사 현황</h3>
+    <div class="dash-days">
+      ${DAYS.map((day,i)=>`<div class="dash-day-card fruit"><div class="day">${day}</div><div class="count">${fruitMealCounts[i]}</div></div>`).join('')}
+    </div>`;
+  totalCard.after(mealSummary);
 }
 
-/* ── 팀별 요약 ── */
-function updateSummary() {
-  const d = getData();
-  const all = [...(d.male||[]), ...(d.female||[])];
-  DAYS.forEach((_, di) => {
-    document.getElementById(`att-${di}`).textContent  = all.filter(p => p.attend[di]).length;
-    document.getElementById(`meal-${di}`).textContent = all.filter(p => p.meal[di]).length;
-  });
-}
-
-/* ── 팀별 테이블 ── */
 function renderGroup(group, tbodyId) {
   const tbody = document.getElementById(tbodyId);
   tbody.innerHTML = '';
-  (getData()[group]||[]).forEach((person, idx) => {
+  const list = getData()[group] || [];
+
+  list.forEach((person, idx) => {
     const tr = document.createElement('tr');
     if (person.intro) tr.classList.add('intro-row');
 
@@ -432,109 +784,143 @@ function renderGroup(group, tbodyId) {
     tr.appendChild(nameTd);
 
     DAYS.forEach((_, di) => {
-      const isLast = di === 4;
+      // 참석
+      const attendTd = document.createElement('td');
+      attendTd.className = 'day-group-start';
+      const attendBtn = document.createElement('button');
+      attendBtn.className = 'check-btn' + (person.attend[di] ? ' checked' : '') + (person.intro ? ' intro-check' : '');
+      attendBtn.textContent = person.attend[di] ? '✓' : '';
+      attendBtn.onclick = () => toggleAttend(group, idx, di);
+      attendTd.appendChild(attendBtn);
+      tr.appendChild(attendTd);
 
-      // 참석 버튼
-      const attTd = document.createElement('td');
-      const attBtn = document.createElement('button');
-      attBtn.className = 'check-btn attend-btn' + (person.attend[di]?' checked':'') + (person.intro?' intro-check':'');
-      attBtn.textContent = person.attend[di] ? '✓' : '';
-      attBtn.onclick = () => toggleAttend(group, idx, di);
-      attTd.appendChild(attBtn);
-      tr.appendChild(attTd);
-
-      // 식사 버튼 (요일 구분선)
+      // 식사
       const mealTd = document.createElement('td');
-      if (!isLast) mealTd.classList.add('day-sep');
       const mealBtn = document.createElement('button');
-      mealBtn.className = 'check-btn meal-btn' + (person.meal[di]?' checked':'') + (person.intro?' intro-check':'');
+      mealBtn.className = 'check-btn meal-btn' + (person.meal[di] ? ' checked' : '') + (person.intro ? ' intro-check' : '');
       mealBtn.textContent = person.meal[di] ? '✓' : '';
       mealBtn.onclick = () => toggleMeal(group, idx, di);
       mealTd.appendChild(mealBtn);
       tr.appendChild(mealTd);
     });
 
-    // 액션
     const actTd = document.createElement('td');
     const actDiv = document.createElement('div');
     actDiv.className = 'action-cell';
+
     if (!person.intro) {
       const introBtn = document.createElement('button');
       introBtn.className = 'intro-add-btn';
       introBtn.textContent = '↳열매';
-      introBtn.onclick = e => { e.stopPropagation(); introOpenState[group]=idx; render(); };
+      introBtn.onclick = (e) => {
+        e.stopPropagation();
+        introOpenState[group] = idx;
+        render();
+      };
       actDiv.appendChild(introBtn);
     }
+
     const delBtn = document.createElement('button');
     delBtn.className = 'delete-btn';
     delBtn.textContent = '×';
     delBtn.onclick = () => deletePerson(group, idx);
     actDiv.appendChild(delBtn);
+
     actTd.appendChild(actDiv);
     tr.appendChild(actTd);
     tbody.appendChild(tr);
 
-    // 열매 추가 인풋
     if (!person.intro && introOpenState[group] === idx) {
       const inputTr = document.createElement('tr');
       inputTr.className = 'intro-input-row';
       const inputTd = document.createElement('td');
       inputTd.colSpan = 12;
+
       const wrap = document.createElement('div');
       wrap.className = 'intro-input-wrap';
+
       const inp = document.createElement('input');
-      inp.type='text'; inp.placeholder=`${person.name}의 열매 이름`; inp.maxLength=10;
+      inp.type = 'text';
+      inp.placeholder = `${person.name}의 열매 이름`;
+      inp.maxLength = 10;
+
       const confirmBtn = document.createElement('button');
-      confirmBtn.className='intro-confirm-btn'; confirmBtn.textContent='추가';
+      confirmBtn.className = 'intro-confirm-btn';
+      confirmBtn.textContent = '추가';
       confirmBtn.onclick = () => {
-        const name=inp.value.trim(); if(!name)return;
-        getData()[group].splice(idx+1,0,makePerson(name,true));
-        introOpenState[group]=-1; saveTeam(currentTeam); render();
+        const name = inp.value.trim();
+        if (!name) return;
+        getData()[group].splice(idx + 1, 0, makePerson(name, true));
+        introOpenState[group] = -1;
+        saveTeam(currentTeam);
+        render();
       };
+
       const cancelBtn = document.createElement('button');
-      cancelBtn.className='intro-cancel-btn'; cancelBtn.textContent='취소';
-      cancelBtn.onclick = () => { introOpenState[group]=-1; render(); };
-      inp.addEventListener('keydown', e=>{ if(e.key==='Enter')confirmBtn.click(); if(e.key==='Escape')cancelBtn.click(); });
-      wrap.appendChild(inp); wrap.appendChild(confirmBtn); wrap.appendChild(cancelBtn);
-      inputTd.appendChild(wrap); inputTr.appendChild(inputTd); tbody.appendChild(inputTr);
-      setTimeout(()=>inp.focus(),50);
+      cancelBtn.className = 'intro-cancel-btn';
+      cancelBtn.textContent = '취소';
+      cancelBtn.onclick = () => { introOpenState[group] = -1; render(); };
+
+      inp.addEventListener('keydown', e => {
+        if (e.key === 'Enter') confirmBtn.click();
+        if (e.key === 'Escape') cancelBtn.click();
+      });
+
+      wrap.appendChild(inp);
+      wrap.appendChild(confirmBtn);
+      wrap.appendChild(cancelBtn);
+      inputTd.appendChild(wrap);
+      inputTr.appendChild(inputTd);
+      tbody.appendChild(inputTr);
+      setTimeout(() => inp.focus(), 50);
     }
   });
 }
 
 function toggleAttend(group, idx, di) {
-  const p = getData()[group][idx];
-  p.attend[di] = !p.attend[di];
-  if (!p.attend[di]) p.meal[di] = false;
-  saveTeam(currentTeam); render();
+  const person = getData()[group][idx];
+  person.attend[di] = !person.attend[di];
+  if (!person.attend[di]) person.meal[di] = false; // 참석 해제 시 식사도 해제
+  saveTeam(currentTeam);
+  render();
 }
 
 function toggleMeal(group, idx, di) {
-  const p = getData()[group][idx];
-  if (!p.attend[di]) { alert('먼저 참석을 체크하세요.'); return; }
-  p.meal[di] = !p.meal[di];
-  saveTeam(currentTeam); render();
+  const person = getData()[group][idx];
+  if (!person.attend[di]) {
+    alert('먼저 참석을 체크하세요.');
+    return;
+  }
+  person.meal[di] = !person.meal[di];
+  saveTeam(currentTeam);
+  render();
 }
 
 window.addPerson = function(group) {
-  const inp = document.getElementById(group==='male'?'maleInput':'femaleInput');
-  const name = inp.value.trim(); if(!name)return;
-  if(!allData[currentTeam]) allData[currentTeam]={male:[],female:[]};
-  if(!allData[currentTeam][group]) allData[currentTeam][group]=[];
-  allData[currentTeam][group].push(makePerson(name,false));
-  inp.value=''; saveTeam(currentTeam); render();
+  const inp = document.getElementById(group === 'male' ? 'maleInput' : 'femaleInput');
+  const name = inp.value.trim();
+  if (!name) return;
+  if (!allData[currentTeam]) allData[currentTeam] = { male: [], female: [] };
+  if (!allData[currentTeam][group]) allData[currentTeam][group] = [];
+  allData[currentTeam][group].push(makePerson(name, false));
+  inp.value = '';
+  saveTeam(currentTeam);
+  render();
 };
 
 window.deletePerson = function(group, idx) {
   const name = getData()[group][idx].name;
-  if(!confirm(`"${name}" 을(를) 삭제할까요?`))return;
-  getData()[group].splice(idx,1); saveTeam(currentTeam); render();
+  if (!confirm(`"${name}" 을(를) 삭제할까요?`)) return;
+  getData()[group].splice(idx, 1);
+  saveTeam(currentTeam);
+  render();
 };
 
-document.getElementById('maleInput').addEventListener('keydown',e=>{if(e.key==='Enter')window.addPerson('male');});
-document.getElementById('femaleInput').addEventListener('keydown',e=>{if(e.key==='Enter')window.addPerson('female');});
+document.getElementById('maleInput').addEventListener('keydown', e => { if(e.key==='Enter') window.addPerson('male'); });
+document.getElementById('femaleInput').addEventListener('keydown', e => { if(e.key==='Enter') window.addPerson('female'); });
 
 loadAllTeams();
 </script>
 </body>
 </html>
+HTMLEOF
