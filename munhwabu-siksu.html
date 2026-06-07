@@ -499,7 +499,7 @@
         <div class="summary-card"><div class="day-label">금</div><div class="day-count" id="sum-4">-</div></div>
       </div>
 
-      <div class="summary-divider"><span>🌱 열매</span></div>
+      <div class="summary-divider"><span>🌱 신규 전도 대상자</span></div>
       <div class="summary-bar" id="fruitSummaryBar">
         <div class="summary-card fruit-card"><div class="day-label">월</div><div class="day-count" id="fruit-0">-</div></div>
         <div class="summary-card fruit-card"><div class="day-label">화</div><div class="day-count" id="fruit-1">-</div></div>
@@ -732,7 +732,7 @@ function renderDashboard() {
           <div class="tc-num">${all.length}<span class="tc-unit">명</span></div>
         </div>
         <div class="tc-col fruit-col">
-          <div class="tc-sub">🌱 열매</div>
+          <div class="tc-sub">🌱 신규 전도 대상자</div>
           <div class="tc-num">${fruits.length}<span class="tc-unit">명</span></div>
         </div>
       </div>`;
@@ -755,7 +755,7 @@ function renderDashboard() {
         <div class="tc-num">${grandTotal}<span class="tc-unit">명</span></div>
       </div>
       <div class="tc-col fruit-col">
-        <div class="tc-sub">🌱 열매</div>
+        <div class="tc-sub">🌱 신규 전도 대상자</div>
         <div class="tc-num">${grandFruit}<span class="tc-unit">명</span></div>
       </div>
     </div>
@@ -779,7 +779,7 @@ function renderDashboard() {
     <div class="dash-days">
       ${DAYS.map((day,i)=>`<div class="dash-day-card"><div class="day">${day}</div><div class="count">${attendCounts[i]}</div></div>`).join('')}
     </div>
-    <h3 style="margin-top:18px;">🌱 열매 참석 현황</h3>
+    <h3 style="margin-top:18px;">🌱 신규 전도 대상자 참석 현황</h3>
     <div class="dash-days">
       ${DAYS.map((day,i)=>`<div class="dash-day-card fruit"><div class="day">${day}</div><div class="count">${fruitAttendCounts[i]}</div></div>`).join('')}
     </div>
@@ -787,7 +787,7 @@ function renderDashboard() {
     <div class="dash-days">
       ${DAYS.map((day,i)=>`<div class="dash-day-card meal"><div class="day">${day}</div><div class="count">${mealCounts[i]}</div></div>`).join('')}
     </div>
-    <h3 style="margin-top:18px;">🌱 열매 식사 현황</h3>
+    <h3 style="margin-top:18px;">🌱 신규 전도 대상자 식사 현황</h3>
     <div class="dash-days">
       ${DAYS.map((day,i)=>`<div class="dash-day-card fruit"><div class="day">${day}</div><div class="count">${fruitMealCounts[i]}</div></div>`).join('')}
     </div>`;
@@ -836,7 +836,7 @@ function renderGroup(group, tbodyId) {
     if (!person.intro) {
       const introBtn = document.createElement('button');
       introBtn.className = 'intro-add-btn';
-      introBtn.textContent = '↳열매';
+      introBtn.textContent = '↳신규';
       introBtn.onclick = (e) => {
         e.stopPropagation();
         introOpenState[group] = idx;
@@ -866,7 +866,7 @@ function renderGroup(group, tbodyId) {
 
       const inp = document.createElement('input');
       inp.type = 'text';
-      inp.placeholder = `${person.name}의 열매 이름`;
+      inp.placeholder = `${person.name}의 신규 전도 대상자 이름`;
       inp.maxLength = 10;
 
       const confirmBtn = document.createElement('button');
