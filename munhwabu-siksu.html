@@ -510,29 +510,9 @@
 <div class="content">
   <div id="loading">데이터 불러오는 중...</div>
 
-  <!-- 0팀: 전체 대시보드 -->
+  <!-- 전체 대시보드 -->
   <div id="dashboardContent">
-    <div class="dash-total-card">
-      <div class="dtc-label">전체 팀 합산</div>
-      <div class="dash-big-row">
-        <div class="dash-big-num">
-          <div class="dbn-label">👥 총 인원</div>
-          <div class="dbn-val" id="dash-total">-</div>
-        </div>
-        <div class="dash-big-num fruit-big">
-          <div class="dbn-label">🌱 열매</div>
-          <div class="dbn-val" id="dash-fruit">-</div>
-        </div>
-      </div>
-    </div>
-
-    <div class="dash-section-label">요일별 식수 (전체 / 열매)</div>
-    <div class="dash-day-grid" id="dashDayGrid">
-    </div>
-
-    <div class="dash-section-label">팀별 현황</div>
-    <div class="dash-team-grid" id="dashTeamGrid">
-    </div>
+    <div class="dash-team-grid" id="dashTeamGrid"></div>
   </div>
 
   <div id="mainContent" style="display:none">
@@ -682,14 +662,64 @@ function getData() { return allData[currentTeam] || { male: [], female: [] }; }
 
 function render() {
   updateTabs();
-  renderGroup('male', 'maleBody');
-  renderGroup('female', 'femaleBody');
-  updateSummary();
+  if (currentTeam === 0) {
+    document.getElementById('dashboardContent').style.display = 'block';
+    document.getElementById('mainContent').style.display = 'none';
+    renderDashboard();
+  } else {
+    document.getElementById('dashboardContent').style.display = 'none';
+    document.getElementById('mainContent').style.display = 'block';
+    renderGroup('male', 'maleBody');
+    renderGroup('female', 'femaleBody');
+    updateSummary();
+  }
 }
 
 function updateTabs() {
-  document.querySelectorAll('.team-tab').forEach((tab, i) => {
-    tab.classList.toggle('active', i + 1 === currentTeam);
+  const tabs = document.querySelectorAll('.team-tab');
+  // 탭 순서: 전체(0), 1팀(1), 2팀(2), 3팀(3), 4팀(4)
+  tabs.forEach((tab, i) => {
+    tab.classList.toggle('active', i === currentTeam);
+  });
+}
+
+function renderDashboard() {
+  // 팀별 카드만
+  const teamGrid = document.getElementById('dashTeamGrid');
+  teamGrid.innerHTML = '';
+  [1,2,3,4].forEach(t => {
+    const d = allData[t] || { male:[], female:[] };
+    const all = [...(d.male||[]), ...(d.female||[])];
+    const fruit = all.filter(p => p.intro).length;
+    const total = all.length;
+    const card = document.createElement('div');
+    card.className = 'dash-team-card';
+    card.innerHTML = `
+      <div class="tc-label">${t}팀</div>
+      <div class="tc-row">
+        <div class="tc-col">
+          <div class="tc-sub">👥 총 인원</div>
+          <div class="tc-total">${total}<span class="tc-unit">명</span></div>
+        </div>
+        <div class="tc-divider"></div>
+        <div class="tc-col fruit-col">
+          <div class="tc-sub">🌱 열매</div>
+          <div class="tc-fruit-num">${fruit}<span class="tc-unit">명</span></div>
+        </div>
+      </div>`;
+    card.onclick = () => window.switchTeam(t);
+    teamGrid.appendChild(card);
+  });
+}
+
+function updateSummary() {
+  const d = getData();
+  const all = [...(d.male||[]), ...(d.female||[])];
+  const fruits = all.filter(p => p.intro);
+  const DAYS = ['월','화','수','목','금'];
+  DAYS.forEach((_, di) => {
+    document.getElementById(`sum-${di}`).textContent = all.filter(p => p.days[di]).length;
+    document.getElementById(`fruit-${di}`).textContent = fruits.filter(p => p.days[di]).length;
   });
 }
 
@@ -797,23 +827,6 @@ function toggleDay(group, idx, di) {
   saveTeam(currentTeam);
   render();
 }
-
-function updateSummary() {
-  const d = getData();
-  const all = [...(d.male||[]), ...(d.female||[])];
-  const fruits = all.filter(p => p.intro);
-
-  DAYS.forEach((_, di) => {
-    document.getElementById(`sum-${di}`).textContent = all.filter(p => p.days[di]).length;
-    document.getElementById(`fruit-${di}`).textContent = fruits.filter(p => p.days[di]).length;
-  });
-}
-
-window.switchTeam = function(team) {
-  introOpenState = { male: -1, female: -1 };
-  currentTeam = team;
-  render();
-};
 
 window.addPerson = function(group) {
   const inp = document.getElementById(group === 'male' ? 'maleInput' : 'femaleInput');
