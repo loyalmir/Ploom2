@@ -448,43 +448,63 @@
   .dash-team-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 10px;
-    margin-bottom: 14px;
+    gap: 12px;
+    margin-top: 16px;
   }
   .dash-team-card {
     background: var(--surface);
     border: 1.5px solid var(--border);
-    border-radius: 12px;
-    padding: 12px 14px;
+    border-radius: 14px;
+    padding: 16px 14px;
     cursor: pointer;
     transition: all 0.15s;
   }
   .dash-team-card:hover { border-color: var(--accent); background: var(--accent-light); }
   .dash-team-card .tc-label {
-    font-size: 0.7rem;
+    font-size: 0.78rem;
     color: var(--text-sub);
     font-weight: 700;
-    margin-bottom: 8px;
+    margin-bottom: 12px;
+    letter-spacing: 0.04em;
   }
   .dash-team-card .tc-row {
     display: flex;
-    justify-content: space-between;
     align-items: center;
+    gap: 0;
+  }
+  .dash-team-card .tc-col {
+    flex: 1;
+    text-align: center;
+  }
+  .dash-team-card .tc-divider {
+    width: 1px;
+    height: 36px;
+    background: var(--border);
+    flex-shrink: 0;
+  }
+  .dash-team-card .tc-sub {
+    font-size: 0.62rem;
+    color: var(--text-sub);
+    margin-bottom: 4px;
   }
   .dash-team-card .tc-total {
-    font-size: 1.5rem;
+    font-size: 1.6rem;
     font-weight: 700;
     color: var(--accent);
     line-height: 1;
   }
-  .dash-team-card .tc-fruit {
-    font-size: 0.75rem;
+  .dash-team-card .tc-fruit-num {
+    font-size: 1.6rem;
+    font-weight: 700;
     color: var(--fruit);
-    font-weight: 600;
-    background: var(--fruit-light);
-    border-radius: 6px;
-    padding: 3px 8px;
+    line-height: 1;
   }
+  .dash-team-card .tc-unit {
+    font-size: 0.7rem;
+    font-weight: 400;
+    margin-left: 1px;
+  }
+  .dash-team-card .fruit-col .tc-sub { color: var(--fruit); }
 
   @media (max-width: 480px) {
     .check-btn { width: 27px; height: 27px; font-size: 0.85rem; }
