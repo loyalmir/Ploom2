@@ -385,6 +385,13 @@
     border-bottom: 1.5px solid var(--border);
   }
   .team5-table thead th.t5-name { text-align: left; padding-left: 14px; width: 44%; }
+  .t5-daycount {
+    display: block;
+    font-size: 0.62rem;
+    color: var(--fruit);
+    font-weight: 700;
+    margin-top: 2px;
+  }
   .team5-table td {
     padding: 8px 4px;
     text-align: center;
@@ -739,13 +746,13 @@
 <div class="header">
   <h1>문화부 집회 주간 식수 인원 파악</h1>
   <div class="team-tabs" id="teamTabs">
-    <button class="team-tab" onclick="switchTeam(-2)">✅ 참석</button>
+    <button class="team-tab" onclick="switchTeam(5)">🙏 기도</button>
     <button class="team-tab active" onclick="switchTeam(0)">전체</button>
     <button class="team-tab" onclick="switchTeam(1)">1팀</button>
     <button class="team-tab" onclick="switchTeam(2)">2팀</button>
     <button class="team-tab" onclick="switchTeam(3)">3팀</button>
     <button class="team-tab" onclick="switchTeam(4)">4팀</button>
-    <button class="team-tab" onclick="switchTeam(5)">5팀</button>
+    <button class="team-tab" onclick="switchTeam(-2)">✅ 참석</button>
   </div>
 </div>
 
@@ -761,7 +768,7 @@
 
   <!-- 5팀 (전도자별 신규 참석) -->
   <div id="team5Content">
-    <div class="prayer-header">🌟 전도자별 신규 참석 현황</div>
+    <div class="prayer-header">🙏 전도자별 신규 기도 명단</div>
     <div id="team5Wrap"></div>
   </div>
 
@@ -960,8 +967,8 @@ function render() {
 }
 
 function updateTabs() {
-  // 탭 순서: 참석(-2), 전체(0), 1~5팀
-  const teams = [-2, 0, 1, 2, 3, 4, 5];
+  // 탭 순서: 기도(5), 전체(0), 1~4팀, 참석(-2)
+  const teams = [5, 0, 1, 2, 3, 4, -2];
   document.querySelectorAll('.team-tab').forEach((tab, i) => {
     tab.classList.toggle('active', teams[i] === currentTeam);
   });
@@ -995,9 +1002,21 @@ function renderTeam5() {
     return;
   }
 
+  // 요일별 참석(체크=빨강) 인원수 계산
+  const dayCounts = [0,0,0,0,0];
+  groups.forEach(grp => {
+    grp.members.forEach(m => {
+      const person = allData[m.team][m.group][m.idx];
+      for (let di = 0; di < 5; di++) {
+        if (person.attend[di] === 2) dayCounts[di]++;
+      }
+    });
+  });
+
   let html = `<table class="team5-table">
     <thead><tr><th class="t5-name">이름</th>
-      <th>월</th><th>화</th><th>수</th><th>목</th><th>금</th></tr></thead><tbody>`;
+      ${DAYS.map((day,i)=>`<th>${day}<span class="t5-daycount">${dayCounts[i]}명</span></th>`).join('')}
+    </tr></thead><tbody>`;
 
   groups.forEach(grp => {
     html += `<tr class="t5-host-row"><td class="t5-name t5-host">${grp.host} <span class="t5-badge">${grp.team}팀</span></td><td colspan="5"></td></tr>`;
