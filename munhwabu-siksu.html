@@ -110,10 +110,12 @@
   .summary-card.fruit-card { border-color: var(--fruit); background: var(--fruit-light); }
   .summary-card .day-label { font-size: 0.65rem; color: var(--text-sub); margin-bottom: 2px; }
   .summary-card.fruit-card .day-label { color: var(--fruit); }
-  .summary-card .day-count { font-size: 1.05rem; font-weight: 700; color: var(--accent); }
+  .summary-card .day-count { font-size: 0.92rem; font-weight: 700; color: var(--accent); }
   .summary-card.fruit-card .day-count { color: var(--fruit); }
   .summary-card .day-count .meal-part { color: var(--meal); }
   .summary-card.fruit-card .day-count .meal-part { color: var(--meal); }
+  .summary-card .day-count .real-part { color: #c83030; }
+  .summary-card.fruit-card .day-count .real-part { color: #c83030; }
   .summary-hint { font-size: 0.6rem; color: var(--text-sub); margin-top: 1px; }
 
   .summary-divider { display: flex; align-items: center; gap: 8px; margin: 10px 0 6px; }
@@ -566,6 +568,13 @@
   .dash-day-card .count { font-size: 1.4rem; font-weight: 700; color: var(--accent); line-height: 1; }
   .dash-day-card.meal .count { color: var(--meal); }
   .dash-day-card.fruit .count { color: var(--fruit); }
+  .dash-day-card .count .dc-slash { color: var(--text-sub); font-weight: 400; font-size: 0.9rem; margin: 0 1px; }
+  .dash-day-card .count .dc-real { color: #c83030; }
+  .dash-meal-summary h3 .h3-hint { font-size: 0.66rem; font-weight: 500; color: var(--text-sub); }
+  .dash-meal-summary h3 .dc-slash { color: var(--text-sub); margin: 0 1px; }
+  .dash-meal-summary h3 .dc-real { color: #c83030; }
+  .dash-total-card .dc-slash { color: var(--text-sub); font-weight: 400; margin: 0 1px; }
+  .dash-total-card .dc-real { color: #c83030; }
 
   @media (max-width: 480px) {
     .check-btn { width: 26px; height: 26px; font-size: 0.8rem; }
@@ -608,7 +617,7 @@
 
     <!-- 팀별 요약 (참석/식사) -->
     <div class="summary-area">
-      <div class="summary-label">전체 식수 <span style="color:var(--accent)">참석</span> / <span style="color:var(--meal)">식사</span></div>
+      <div class="summary-label">전체 식수 <span style="color:var(--accent)">참석</span> / <span style="color:#c83030">실참석</span> / <span style="color:var(--meal)">식수</span></div>
       <div class="summary-bar" id="totalSummaryBar">
         <div class="summary-card"><div class="day-label">월</div><div class="day-count" id="sum-0">-</div></div>
         <div class="summary-card"><div class="day-label">화</div><div class="day-count" id="sum-1">-</div></div>
@@ -839,17 +848,20 @@ function updateSummary() {
   const d = getData();
   const all = [...(d.male||[]), ...(d.female||[])];
   const fruits = all.filter(p => p.intro);
+  const sl = '<span style="color:var(--text-sub);font-weight:400;font-size:0.8rem">/</span>';
 
   DAYS.forEach((_, di) => {
     const att = all.filter(p => p.attend[di]).length;
+    const real = all.filter(p => p.attend[di] === 2).length; // 신규 실참석(빨강)
     const meal = all.filter(p => p.meal[di]).length;
     document.getElementById(`sum-${di}`).innerHTML =
-      `${att}<span style="color:var(--text-sub);font-weight:400;font-size:0.85rem">/</span><span class="meal-part">${meal}</span>`;
+      `${att}${sl}<span class="real-part">${real}</span>${sl}<span class="meal-part">${meal}</span>`;
 
     const fAtt = fruits.filter(p => p.attend[di]).length;
+    const fReal = fruits.filter(p => p.attend[di] === 2).length;
     const fMeal = fruits.filter(p => p.meal[di]).length;
     document.getElementById(`fruit-${di}`).innerHTML =
-      `${fAtt}<span style="color:var(--text-sub);font-weight:400;font-size:0.85rem">/</span><span class="meal-part">${fMeal}</span>`;
+      `${fAtt}${sl}<span class="real-part">${fReal}</span>${sl}<span class="meal-part">${fMeal}</span>`;
   });
 }
 
@@ -869,8 +881,10 @@ function renderDashboard() {
 
   let grandTotal = 0, grandFruit = 0;
   const attendCounts = [0,0,0,0,0];
+  const realCounts = [0,0,0,0,0];
   const mealCounts = [0,0,0,0,0];
   const fruitAttendCounts = [0,0,0,0,0];
+  const fruitRealCounts = [0,0,0,0,0];
   const fruitMealCounts = [0,0,0,0,0];
 
   [1,2,3,4].forEach(t => {
@@ -882,11 +896,11 @@ function renderDashboard() {
     grandFruit += fruits.length;
 
     all.forEach(p => {
-      (p.attend||[]).forEach((c, di) => { if (c) attendCounts[di]++; });
+      (p.attend||[]).forEach((c, di) => { if (c) attendCounts[di]++; if (c === 2) realCounts[di]++; });
       (p.meal||[]).forEach((c, di) => { if (c) mealCounts[di]++; });
     });
     fruits.forEach(p => {
-      (p.attend||[]).forEach((c, di) => { if (c) fruitAttendCounts[di]++; });
+      (p.attend||[]).forEach((c, di) => { if (c) fruitAttendCounts[di]++; if (c === 2) fruitRealCounts[di]++; });
       (p.meal||[]).forEach((c, di) => { if (c) fruitMealCounts[di]++; });
     });
 
@@ -912,8 +926,9 @@ function renderDashboard() {
     teamGrid.appendChild(card);
   });
 
-  // 전체 참석/식수 합산
+  // 전체 참석/실참석/식수 합산
   const totalAttend = attendCounts.reduce((a,b)=>a+b,0);
+  const totalReal = realCounts.reduce((a,b)=>a+b,0);
   const totalMeal = mealCounts.reduce((a,b)=>a+b,0);
 
   // 전체 합산 카드
@@ -933,8 +948,8 @@ function renderDashboard() {
     </div>
     <div class="tc-row">
       <div class="tc-col" style="background:var(--accent-light)">
-        <div class="tc-sub" style="color:var(--accent)">🙋 참석 합계</div>
-        <div class="tc-num" style="color:var(--accent)">${totalAttend}<span class="tc-unit">명</span></div>
+        <div class="tc-sub" style="color:var(--accent)">🙋 참석<span class="dc-slash">/</span><span class="dc-real">실참석</span></div>
+        <div class="tc-num" style="color:var(--accent)">${totalAttend}<span class="dc-slash" style="font-size:1.3rem">/</span><span class="dc-real" style="font-size:2.2rem">${totalReal}</span><span class="tc-unit">명</span></div>
       </div>
       <div class="tc-col" style="background:var(--meal-light)">
         <div class="tc-sub" style="color:var(--meal)">🍱 식수 합계</div>
@@ -946,14 +961,15 @@ function renderDashboard() {
   // 요일별 식수 현황
   const mealSummary = document.createElement('div');
   mealSummary.className = 'dash-meal-summary';
+  const realTag = (n) => `<span class="dc-slash">/</span><span class="dc-real">${n}</span>`;
   mealSummary.innerHTML = `
-    <h3>🙋 전체 참석 현황</h3>
+    <h3>🙋 전체 참석 현황 <span class="h3-hint">참석<span class="dc-slash">/</span><span class="dc-real">실참석</span></span></h3>
     <div class="dash-days">
-      ${DAYS.map((day,i)=>`<div class="dash-day-card"><div class="day">${day}</div><div class="count">${attendCounts[i]}</div></div>`).join('')}
+      ${DAYS.map((day,i)=>`<div class="dash-day-card"><div class="day">${day}</div><div class="count">${attendCounts[i]}${realTag(realCounts[i])}</div></div>`).join('')}
     </div>
-    <h3 style="margin-top:18px;">🌱 신규 전도 대상자 참석 현황</h3>
+    <h3 style="margin-top:18px;">🌱 신규 전도 대상자 참석 현황 <span class="h3-hint">참석<span class="dc-slash">/</span><span class="dc-real">실참석</span></span></h3>
     <div class="dash-days">
-      ${DAYS.map((day,i)=>`<div class="dash-day-card fruit"><div class="day">${day}</div><div class="count">${fruitAttendCounts[i]}</div></div>`).join('')}
+      ${DAYS.map((day,i)=>`<div class="dash-day-card fruit"><div class="day">${day}</div><div class="count">${fruitAttendCounts[i]}${realTag(fruitRealCounts[i])}</div></div>`).join('')}
     </div>
     <h3 style="margin-top:18px;">🍱 전체 식사 현황</h3>
     <div class="dash-days">
