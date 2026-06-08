@@ -227,6 +227,12 @@
     background: var(--fruit);
     border-color: var(--fruit);
   }
+  /* 신규 실제 참석 (빨강) */
+  .check-btn.intro-check.attended {
+    background: #e05050;
+    border-color: #e05050;
+    color: white;
+  }
   /* 식사 체크 (파랑) */
   .check-btn.meal-btn.checked {
     background: var(--meal);
@@ -407,6 +413,13 @@
     text-align: center;
     padding: 6px 4px;
     border-radius: 8px;
+    border: 2px solid transparent;
+  }
+  .pd-name.attended {
+    border-color: #e05050;
+    color: #c83030;
+    font-weight: 700;
+    background: #fce8e8;
   }
   .pd-empty {
     text-align: center;
@@ -781,15 +794,19 @@ function renderPrayer() {
 
   // 요일별로 그룹핑 (참석 체크 기준)
   DAYS.forEach((day, di) => {
-    const names = allNewcomers.filter(p => p.attend && p.attend[di]).map(p => p.name);
+    // 참석한 사람 (1=약속, 2=실제참석)
+    const people = allNewcomers.filter(p => p.attend && p.attend[di]);
 
     const card = document.createElement('div');
     card.className = 'prayer-day-card';
     card.innerHTML = `
-      <div class="pd-header">${day} <span class="pd-count">${names.length}명</span></div>
+      <div class="pd-header">${day} <span class="pd-count">${people.length}명</span></div>
       <div class="pd-names">
-        ${names.length
-          ? names.map(n => `<div class="pd-name">${n}</div>`).join('')
+        ${people.length
+          ? people.map(p => {
+              const attended = (p.attend[di] === 2);
+              return `<div class="pd-name${attended ? ' attended' : ''}">${p.name}</div>`;
+            }).join('')
           : '<div class="pd-empty">—</div>'}
       </div>`;
     grid.appendChild(card);
@@ -857,7 +874,7 @@ function renderDashboard() {
       <div class="tc-label">${t}팀</div>
       <div class="tc-row">
         <div class="tc-col">
-          <div class="tc-sub">👥 총 인원</div>
+          <div class="tc-sub">👥 기팀 인원</div>
           <div class="tc-num">${all.length}<span class="tc-unit">명</span></div>
         </div>
         <div class="tc-col fruit-col">
@@ -959,8 +976,19 @@ function renderGroup(group, tbodyId) {
       const attendTd = document.createElement('td');
       attendTd.className = 'day-group-start';
       const attendBtn = document.createElement('button');
-      attendBtn.className = 'check-btn' + (person.attend[di] ? ' checked' : '') + (person.intro ? ' intro-check' : '');
-      attendBtn.textContent = person.attend[di] ? '✓' : '';
+      const av = person.attend[di];
+      if (person.intro) {
+        // 신규: 0=없음, 1=약속(초록), 2=실제참석(빨강)
+        const lvl = av === true ? 1 : (av || 0); // 구버전 true 보정
+        let cls = 'check-btn intro-check';
+        if (lvl === 1) cls += ' checked';
+        else if (lvl === 2) cls += ' attended';
+        attendBtn.className = cls;
+        attendBtn.textContent = lvl ? '✓' : '';
+      } else {
+        attendBtn.className = 'check-btn' + (av ? ' checked' : '');
+        attendBtn.textContent = av ? '✓' : '';
+      }
       attendBtn.onclick = () => toggleAttend(group, idx, di);
       attendTd.appendChild(attendBtn);
       tr.appendChild(attendTd);
@@ -1098,8 +1126,16 @@ function editName(group, idx, nameTd, person) {
 
 function toggleAttend(group, idx, di) {
   const person = getData()[group][idx];
-  person.attend[di] = !person.attend[di];
-  if (!person.attend[di]) person.meal[di] = false; // 참석 해제 시 식사도 해제
+  if (person.intro) {
+    // 신규: 0(없음) → 1(약속,초록) → 2(실제참석,빨강) → 0
+    let cur = person.attend[di] === true ? 1 : (person.attend[di] || 0);
+    cur = (cur + 1) % 3;
+    person.attend[di] = cur;
+    if (cur === 0) person.meal[di] = false; // 참석 해제 시 식사도 해제
+  } else {
+    person.attend[di] = !person.attend[di];
+    if (!person.attend[di]) person.meal[di] = false;
+  }
   saveTeam(currentTeam);
   render();
 }
