@@ -756,22 +756,42 @@
   }
   .pdf-btn:hover { background: #a85f25; }
 
-  /* 인쇄 (A4) */
+  /* 인쇄 (A4 한 장) */
   @media print {
-    @page { size: A4; margin: 12mm; }
+    @page { size: A4; margin: 8mm; }
     body { background: white; padding: 0; }
     .header, .pdf-btn { display: none !important; }
     .content { padding: 0; }
-    /* 기본은 다 숨기고, 인쇄 대상만 표시 */
     #attendContent, #dashboardContent, #team5Content, #mainContent { display: none !important; }
     body.printing-attend #attendContent { display: block !important; }
     body.printing-dash #dashboardContent { display: block !important; }
-    .prayer-day-btn { border: 1px solid #ccc !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .prayer-day-btn { border: 1px solid #ccc !important; }
     .prayer-day-btn.active { background: var(--accent) !important; color: white !important; }
-    /* 색상 인쇄 유지 */
     * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
-    .prayer-table, .dash-team-card, .dash-total-card, .dash-meal-summary { break-inside: avoid; }
-    .prayer-header { text-align: center; font-size: 1.1rem; margin-bottom: 14px; }
+    .prayer-header { text-align: center; font-size: 1rem; margin-bottom: 8px; }
+
+    /* 참석 탭: 한 장에 압축 */
+    body.printing-attend .prayer-day-tabs { gap: 4px; margin-bottom: 8px; }
+    body.printing-attend .prayer-day-btn { padding: 5px 2px; font-size: 0.8rem; }
+    body.printing-attend .prayer-table td,
+    body.printing-attend .prayer-table thead th { padding: 4px 4px; font-size: 0.8rem; }
+    body.printing-attend .prayer-table tfoot td { padding: 5px 4px; }
+    body.printing-attend table { break-inside: auto; }
+    body.printing-attend tr { break-inside: avoid; }
+
+    /* 전체 탭: 한 장에 압축 */
+    body.printing-dash .dash-team-card { padding: 8px 10px; break-inside: avoid; }
+    body.printing-dash .dash-team-card .tc-num { font-size: 1.3rem; }
+    body.printing-dash .dash-team-card .tc-col { padding: 6px 4px; }
+    body.printing-dash .dash-team-grid { gap: 8px; margin-top: 0; }
+    body.printing-dash .dash-total-card { padding: 10px; margin-top: 8px; break-inside: avoid; }
+    body.printing-dash .dash-total-card .tc-num { font-size: 1.5rem; }
+    body.printing-dash .dash-total-card .tc-col { padding: 7px; }
+    body.printing-dash .dash-meal-summary { padding: 10px; margin-top: 8px; break-inside: avoid; }
+    body.printing-dash .dash-meal-summary h3 { font-size: 0.78rem; margin-bottom: 5px; margin-top: 8px !important; }
+    body.printing-dash .dash-day-card { padding: 5px 3px; }
+    body.printing-dash .dash-day-card .count { font-size: 0.95rem; }
+    body.printing-dash .dash-days { gap: 5px; }
   }
 </style>
 </head>
