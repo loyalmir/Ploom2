@@ -1015,7 +1015,7 @@ function renderTeam5() {
   html += `</tbody></table>`;
   wrap.innerHTML = html;
 
-  // 체크 이벤트: 5팀 체크 = attend 2(빨강), 해제 = 1(초록 약속)
+  // 체크 이벤트: 5팀 체크 = attend 2(빨강), 해제 = 직전 상태(빈칸/초록)로 복원
   wrap.querySelectorAll('.t5-check').forEach(btn => {
     btn.onclick = () => {
       const t = +btn.dataset.team;
@@ -1023,7 +1023,16 @@ function renderTeam5() {
       const idx = +btn.dataset.idx;
       const di = +btn.dataset.di;
       const person = allData[t][g][idx];
-      person.attend[di] = (person.attend[di] === 2) ? 1 : 2; // 체크↔해제(약속으로)
+      if (!person.prevAttend) person.prevAttend = [0,0,0,0,0];
+
+      if (person.attend[di] === 2) {
+        // 해제 → 빨강 만들기 직전 상태로 복원 (0=빈칸 또는 1=초록)
+        person.attend[di] = person.prevAttend[di] || 0;
+      } else {
+        // 체크 → 현재 상태(빈칸/초록) 기억해두고 빨강으로
+        person.prevAttend[di] = person.attend[di] === true ? 1 : (person.attend[di] || 0);
+        person.attend[di] = 2;
+      }
       saveTeam(t);
       renderTeam5();
     };
