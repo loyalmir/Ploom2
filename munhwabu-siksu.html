@@ -398,6 +398,8 @@
     font-weight: 500;
     margin-top: 2px;
   }
+  .pd-slash { color: var(--text-sub); font-weight: 400; margin: 0 1px; }
+  .pd-real { color: #c83030; font-weight: 700; }
   .pd-names {
     padding: 8px 6px;
     display: flex;
@@ -813,11 +815,14 @@ function renderPrayer() {
   DAYS.forEach((day, di) => {
     // 참석한 사람 (1=약속, 2=실제참석)
     const people = allNewcomers.filter(p => p.attend && p.attend[di]);
+    const attendedCount = people.filter(p => p.attend[di] === 2).length;
 
     const card = document.createElement('div');
     card.className = 'prayer-day-card';
     card.innerHTML = `
-      <div class="pd-header">${day} <span class="pd-count">${people.length}명</span></div>
+      <div class="pd-header">${day}
+        <span class="pd-count">${people.length}<span class="pd-slash">/</span><span class="pd-real">${attendedCount}</span>명</span>
+      </div>
       <div class="pd-names">
         ${people.length
           ? people.map(p => {
