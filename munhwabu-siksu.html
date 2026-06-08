@@ -617,7 +617,7 @@
 
     <!-- 팀별 요약 (참석/식사) -->
     <div class="summary-area">
-      <div class="summary-label">전체 식수 <span style="color:var(--accent)">참석</span> / <span style="color:#c83030">실참석</span> / <span style="color:var(--meal)">식수</span></div>
+      <div class="summary-label">전체 식수 <span style="color:var(--accent)">참석</span> / <span style="color:var(--meal)">식수</span></div>
       <div class="summary-bar" id="totalSummaryBar">
         <div class="summary-card"><div class="day-label">월</div><div class="day-count" id="sum-0">-</div></div>
         <div class="summary-card"><div class="day-label">화</div><div class="day-count" id="sum-1">-</div></div>
@@ -852,10 +852,9 @@ function updateSummary() {
 
   DAYS.forEach((_, di) => {
     const att = all.filter(p => p.attend[di]).length;
-    const real = all.filter(p => p.attend[di] === 2).length; // 신규 실참석(빨강)
     const meal = all.filter(p => p.meal[di]).length;
     document.getElementById(`sum-${di}`).innerHTML =
-      `${att}${sl}<span class="real-part">${real}</span>${sl}<span class="meal-part">${meal}</span>`;
+      `${att}${sl}<span class="meal-part">${meal}</span>`;
 
     const fAtt = fruits.filter(p => p.attend[di]).length;
     const fReal = fruits.filter(p => p.attend[di] === 2).length;
@@ -926,9 +925,8 @@ function renderDashboard() {
     teamGrid.appendChild(card);
   });
 
-  // 전체 참석/실참석/식수 합산
+  // 전체 참석/식수 합산
   const totalAttend = attendCounts.reduce((a,b)=>a+b,0);
-  const totalReal = realCounts.reduce((a,b)=>a+b,0);
   const totalMeal = mealCounts.reduce((a,b)=>a+b,0);
 
   // 전체 합산 카드
@@ -948,8 +946,8 @@ function renderDashboard() {
     </div>
     <div class="tc-row">
       <div class="tc-col" style="background:var(--accent-light)">
-        <div class="tc-sub" style="color:var(--accent)">🙋 참석<span class="dc-slash">/</span><span class="dc-real">실참석</span></div>
-        <div class="tc-num" style="color:var(--accent)">${totalAttend}<span class="dc-slash" style="font-size:1.3rem">/</span><span class="dc-real" style="font-size:2.2rem">${totalReal}</span><span class="tc-unit">명</span></div>
+        <div class="tc-sub" style="color:var(--accent)">🙋 참석 합계</div>
+        <div class="tc-num" style="color:var(--accent)">${totalAttend}<span class="tc-unit">명</span></div>
       </div>
       <div class="tc-col" style="background:var(--meal-light)">
         <div class="tc-sub" style="color:var(--meal)">🍱 식수 합계</div>
@@ -963,9 +961,9 @@ function renderDashboard() {
   mealSummary.className = 'dash-meal-summary';
   const realTag = (n) => `<span class="dc-slash">/</span><span class="dc-real">${n}</span>`;
   mealSummary.innerHTML = `
-    <h3>🙋 전체 참석 현황 <span class="h3-hint">참석<span class="dc-slash">/</span><span class="dc-real">실참석</span></span></h3>
+    <h3>🙋 전체 참석 현황</h3>
     <div class="dash-days">
-      ${DAYS.map((day,i)=>`<div class="dash-day-card"><div class="day">${day}</div><div class="count">${attendCounts[i]}${realTag(realCounts[i])}</div></div>`).join('')}
+      ${DAYS.map((day,i)=>`<div class="dash-day-card"><div class="day">${day}</div><div class="count">${attendCounts[i]}</div></div>`).join('')}
     </div>
     <h3 style="margin-top:18px;">🌱 신규 전도 대상자 참석 현황 <span class="h3-hint">참석<span class="dc-slash">/</span><span class="dc-real">실참석</span></span></h3>
     <div class="dash-days">
