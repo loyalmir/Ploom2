@@ -364,6 +364,69 @@
 
   /* 기도 - 신규 참석 명단 */
   #prayerContent { display: none; }
+  #attendContent { display: none; }
+
+  /* 기도 명단 카드 (요일별) */
+  .prayer-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 10px;
+  }
+  .prayer-day-card {
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: 14px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+  .pd-header {
+    background: var(--accent-light);
+    color: var(--accent);
+    font-size: 0.82rem;
+    font-weight: 700;
+    text-align: center;
+    padding: 10px 4px;
+    border-bottom: 1.5px solid var(--border);
+  }
+  .pd-count {
+    display: block;
+    font-size: 0.66rem;
+    color: var(--text-sub);
+    font-weight: 500;
+    margin-top: 2px;
+  }
+  .pd-slash { color: var(--text-sub); font-weight: 400; margin: 0 1px; }
+  .pd-real { color: #c83030; font-weight: 700; }
+  .pd-names {
+    padding: 8px 6px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    min-height: 40px;
+  }
+  .pd-name {
+    background: var(--fruit-light);
+    color: var(--fruit);
+    font-size: 0.8rem;
+    font-weight: 500;
+    text-align: center;
+    padding: 6px 4px;
+    border-radius: 8px;
+    border: 2px solid transparent;
+  }
+  .pd-name.attended {
+    border-color: #e05050;
+    color: #c83030;
+    font-weight: 700;
+    background: #fce8e8;
+  }
+  .pd-empty {
+    text-align: center;
+    color: var(--text-sub);
+    font-size: 0.85rem;
+    padding: 8px 0;
+  }
   .prayer-header {
     font-size: 0.95rem;
     font-weight: 700;
@@ -443,6 +506,10 @@
     border-radius: 14px;
   }
   @media (max-width: 600px) {
+    .prayer-grid { gap: 6px; }
+    .pd-header { font-size: 0.74rem; padding: 8px 2px; }
+    .pd-name { font-size: 0.72rem; padding: 5px 2px; }
+    .pd-names { padding: 6px 4px; }
     .prayer-day-btn { padding: 10px 2px; font-size: 0.85rem; }
     .prayer-table td, .prayer-table thead th { padding: 8px 3px; font-size: 0.78rem; }
     .prayer-table .pt-team { width: 42px; }
@@ -602,6 +669,7 @@
   <h1>문화부 집회 주간 식수 인원 파악</h1>
   <div class="team-tabs" id="teamTabs">
     <button class="team-tab" onclick="switchTeam(-1)">🙏 기도</button>
+    <button class="team-tab" onclick="switchTeam(-2)">✅ 참석</button>
     <button class="team-tab active" onclick="switchTeam(0)">전체</button>
     <button class="team-tab" onclick="switchTeam(1)">1팀</button>
     <button class="team-tab" onclick="switchTeam(2)">2팀</button>
@@ -613,9 +681,15 @@
 <div class="content">
   <div id="loading">데이터 불러오는 중...</div>
 
-  <!-- 기도 리스트 -->
+  <!-- 기도 명단 (참석 약속한 신규, 소개자별) -->
   <div id="prayerContent">
-    <div class="prayer-header">🙏 신규 전도 대상자 참석 명단</div>
+    <div class="prayer-header">🙏 신규 전도 대상자 기도 명단</div>
+    <div class="prayer-grid" id="prayerGrid"></div>
+  </div>
+
+  <!-- 참석 표 (요일별 실참석) -->
+  <div id="attendContent">
+    <div class="prayer-header">✅ 신규 전도 대상자 참석 명단</div>
     <div class="prayer-day-tabs" id="prayerDayTabs"></div>
     <div id="prayerTableWrap"></div>
   </div>
@@ -788,22 +862,25 @@ function getData() { return allData[currentTeam] || { male: [], female: [] }; }
 function render() {
   updateTabs();
   const prayer = document.getElementById('prayerContent');
+  const attend = document.getElementById('attendContent');
   const dash = document.getElementById('dashboardContent');
   const main = document.getElementById('mainContent');
 
+  prayer.style.display = 'none';
+  attend.style.display = 'none';
+  dash.style.display = 'none';
+  main.style.display = 'none';
+
   if (currentTeam === -1) {
     prayer.style.display = 'block';
-    dash.style.display = 'none';
-    main.style.display = 'none';
+    renderPrayerList();
+  } else if (currentTeam === -2) {
+    attend.style.display = 'block';
     renderPrayer();
   } else if (currentTeam === 0) {
-    prayer.style.display = 'none';
     dash.style.display = 'block';
-    main.style.display = 'none';
     renderDashboard();
   } else {
-    prayer.style.display = 'none';
-    dash.style.display = 'none';
     main.style.display = 'block';
     renderGroup('male', 'maleBody');
     renderGroup('female', 'femaleBody');
@@ -812,14 +889,50 @@ function render() {
 }
 
 function updateTabs() {
-  // 탭 순서: 기도(-1), 전체(0), 1팀(1)...
-  const teams = [-1, 0, 1, 2, 3, 4];
+  // 탭 순서: 기도(-1), 참석(-2), 전체(0), 1팀(1)...
+  const teams = [-1, -2, 0, 1, 2, 3, 4];
   document.querySelectorAll('.team-tab').forEach((tab, i) => {
     tab.classList.toggle('active', teams[i] === currentTeam);
   });
 }
 
 let prayerDay = 0; // 현재 선택된 요일 (0=월)
+
+// 기도 명단: 참석 약속한 신규 전체 (요일별 카드)
+function renderPrayerList() {
+  const grid = document.getElementById('prayerGrid');
+  grid.innerHTML = '';
+
+  const allNewcomers = [];
+  [1,2,3,4].forEach(t => {
+    const d = allData[t] || { male:[], female:[] };
+    [...(d.male||[]), ...(d.female||[])].forEach(p => {
+      if (p.intro) allNewcomers.push(p);
+    });
+  });
+
+  DAYS.forEach((day, di) => {
+    // 참석한 사람 (1=약속, 2=실제참석 둘 다)
+    const people = allNewcomers.filter(p => p.attend && p.attend[di]);
+    const attendedCount = people.filter(p => p.attend[di] === 2).length;
+
+    const card = document.createElement('div');
+    card.className = 'prayer-day-card';
+    card.innerHTML = `
+      <div class="pd-header">${day}
+        <span class="pd-count">${people.length}<span class="pd-slash">/</span><span class="pd-real">${attendedCount}</span>명</span>
+      </div>
+      <div class="pd-names">
+        ${people.length
+          ? people.map(p => {
+              const attended = (p.attend[di] === 2);
+              return `<div class="pd-name${attended ? ' attended' : ''}">${p.name}</div>`;
+            }).join('')
+          : '<div class="pd-empty">—</div>'}
+      </div>`;
+    grid.appendChild(card);
+  });
+}
 
 function renderPrayer() {
   // 요일 버튼
