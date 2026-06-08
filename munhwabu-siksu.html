@@ -449,12 +449,29 @@
     transition: all 0.15s;
   }
   .dash-team-card:hover { border-color: var(--accent); background: var(--accent-light); }
-  .dash-team-card .tc-label {
-    font-size: 0.78rem;
-    color: var(--text-sub);
-    font-weight: 700;
+  .dash-team-card .tc-toprow {
+    display: flex;
+    align-items: center;
+    gap: 10px;
     margin-bottom: 12px;
+  }
+  .dash-team-card .tc-label {
+    font-size: 0.95rem;
+    color: var(--text);
+    font-weight: 700;
     letter-spacing: 0.04em;
+    flex-shrink: 0;
+  }
+  .dash-team-card .tc-totalbar {
+    flex: 1;
+    background: var(--accent-light);
+    color: var(--accent);
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-align: center;
+    padding: 8px 10px;
+    border-radius: 9px;
+    border: 1.5px solid var(--border);
   }
   .dash-team-card .tc-row { display: flex; gap: 8px; }
   .dash-team-card .tc-col {
@@ -870,12 +887,16 @@ function renderDashboard() {
 
     const card = document.createElement('div');
     card.className = 'dash-team-card';
+    const teamOnly = all.length - fruits.length;
     card.innerHTML = `
-      <div class="tc-label">${t}팀</div>
+      <div class="tc-toprow">
+        <div class="tc-label">${t}팀</div>
+        <div class="tc-totalbar">총원 ${all.length}명</div>
+      </div>
       <div class="tc-row">
         <div class="tc-col">
-          <div class="tc-sub">👥 기팀 인원</div>
-          <div class="tc-num">${all.length}<span class="tc-unit">명</span></div>
+          <div class="tc-sub">👥 ${t}팀 인원</div>
+          <div class="tc-num">${teamOnly}<span class="tc-unit">명</span></div>
         </div>
         <div class="tc-col fruit-col">
           <div class="tc-sub">🌱 신규 전도 대상자</div>
