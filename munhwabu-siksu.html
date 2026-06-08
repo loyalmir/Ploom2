@@ -365,6 +365,78 @@
   /* 기도 - 신규 참석 명단 */
   #prayerContent { display: none; }
   #attendContent { display: none; }
+  #team5Content { display: none; }
+
+  /* 5팀 테이블 */
+  .team5-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: 14px;
+    overflow: hidden;
+  }
+  .team5-table thead th {
+    background: var(--male-header);
+    color: var(--text);
+    font-size: 0.82rem;
+    font-weight: 700;
+    padding: 11px 4px;
+    text-align: center;
+    border-bottom: 1.5px solid var(--border);
+  }
+  .team5-table thead th.t5-name { text-align: left; padding-left: 14px; width: 44%; }
+  .team5-table td {
+    padding: 8px 4px;
+    text-align: center;
+    border-bottom: 1px solid #ede6d6;
+  }
+  .team5-table .t5-name { text-align: left; padding-left: 14px; }
+  .team5-table .t5-host-row { background: #faf6ee; }
+  .team5-table .t5-host {
+    font-weight: 700;
+    color: var(--text);
+    font-size: 0.9rem;
+  }
+  .team5-table .t5-badge {
+    font-size: 0.62rem;
+    color: var(--accent);
+    background: var(--accent-light);
+    padding: 2px 7px;
+    border-radius: 6px;
+    margin-left: 5px;
+    font-weight: 600;
+    vertical-align: middle;
+  }
+  .team5-table .t5-member {
+    color: var(--fruit);
+    font-size: 0.84rem;
+    font-weight: 500;
+    padding-left: 26px;
+  }
+  .t5-check {
+    width: 30px;
+    height: 30px;
+    border-radius: 8px;
+    border: 1.5px solid var(--border);
+    background: transparent;
+    cursor: pointer;
+    font-size: 0.9rem;
+    color: transparent;
+    transition: all 0.15s;
+  }
+  .t5-check.on {
+    background: var(--fruit);
+    border-color: var(--fruit);
+    color: white;
+  }
+  .t5-check:active { transform: scale(0.9); }
+  @media (max-width: 600px) {
+    .team5-table thead th, .team5-table td { padding: 7px 2px; font-size: 0.76rem; }
+    .team5-table .t5-name { padding-left: 8px; }
+    .team5-table .t5-member { padding-left: 16px; }
+    .t5-check { width: 27px; height: 27px; }
+  }
 
   /* 기도 명단 카드 (요일별) */
   .prayer-grid {
@@ -675,6 +747,7 @@
     <button class="team-tab" onclick="switchTeam(2)">2팀</button>
     <button class="team-tab" onclick="switchTeam(3)">3팀</button>
     <button class="team-tab" onclick="switchTeam(4)">4팀</button>
+    <button class="team-tab" onclick="switchTeam(5)">5팀</button>
   </div>
 </div>
 
@@ -692,6 +765,12 @@
     <div class="prayer-header">✅ 신규 전도 대상자 참석 명단</div>
     <div class="prayer-day-tabs" id="prayerDayTabs"></div>
     <div id="prayerTableWrap"></div>
+  </div>
+
+  <!-- 5팀 (전도자별 신규 참석) -->
+  <div id="team5Content">
+    <div class="prayer-header">🌟 전도자별 신규 참석 현황</div>
+    <div id="team5Wrap"></div>
   </div>
 
   <!-- 전체 대시보드 -->
@@ -852,9 +931,16 @@ async function loadAllTeams() {
     });
   });
 
+  // 5팀 독립 참석 데이터 로드 {신규키: [월~금]}
+  const snap5 = await get(ref(db, 'siksu/team5_attend'));
+  team5Attend = snap5.exists() ? snap5.val() : {};
+
   render();
   document.getElementById('loading').style.display = 'none';
 }
+
+let team5Attend = {};
+function saveTeam5() { set(ref(db, 'siksu/team5_attend'), team5Attend); }
 
 function saveTeam(team) { set(ref(db, teamPath(team)), allData[team]); }
 function getData() { return allData[currentTeam] || { male: [], female: [] }; }
@@ -863,11 +949,13 @@ function render() {
   updateTabs();
   const prayer = document.getElementById('prayerContent');
   const attend = document.getElementById('attendContent');
+  const team5 = document.getElementById('team5Content');
   const dash = document.getElementById('dashboardContent');
   const main = document.getElementById('mainContent');
 
   prayer.style.display = 'none';
   attend.style.display = 'none';
+  team5.style.display = 'none';
   dash.style.display = 'none';
   main.style.display = 'none';
 
@@ -877,6 +965,9 @@ function render() {
   } else if (currentTeam === -2) {
     attend.style.display = 'block';
     renderPrayer();
+  } else if (currentTeam === 5) {
+    team5.style.display = 'block';
+    renderTeam5();
   } else if (currentTeam === 0) {
     dash.style.display = 'block';
     renderDashboard();
@@ -889,14 +980,75 @@ function render() {
 }
 
 function updateTabs() {
-  // 탭 순서: 기도(-1), 참석(-2), 전체(0), 1팀(1)...
-  const teams = [-1, -2, 0, 1, 2, 3, 4];
+  // 탭 순서: 기도(-1), 참석(-2), 전체(0), 1~5팀
+  const teams = [-1, -2, 0, 1, 2, 3, 4, 5];
   document.querySelectorAll('.team-tab').forEach((tab, i) => {
     tab.classList.toggle('active', teams[i] === currentTeam);
   });
 }
 
 let prayerDay = 0; // 현재 선택된 요일 (0=월)
+
+// 5팀: 전도자별 신규 참석 (독립 기록, 월~금)
+function renderTeam5() {
+  const wrap = document.getElementById('team5Wrap');
+
+  // 전도자(신규를 데려온 형제·자매)별로 신규 묶기
+  const groups = []; // {team, host, members:[{key,name}]}
+  [1,2,3,4].forEach(t => {
+    const d = allData[t] || { male:[], female:[] };
+    ['male','female'].forEach(g => {
+      let host = null;
+      (d[g]||[]).forEach((p, idx) => {
+        if (!p.intro) {
+          host = { team: t, host: p.name, members: [] };
+        } else if (host) {
+          host.members.push({ key: `${t}_${g}_${p.name}_${idx}`, name: p.name });
+          // 마지막에 추가되는 시점에 그룹 등록 보장
+          if (!groups.includes(host)) groups.push(host);
+        }
+      });
+    });
+  });
+
+  if (!groups.length) {
+    wrap.innerHTML = `<div class="prayer-empty">아직 전도하는 형제·자매가 없어요.<br>1~4팀에서 신규 전도 대상자를 추가하면 여기 자동으로 모여요.</div>`;
+    return;
+  }
+
+  let html = `<table class="team5-table">
+    <thead><tr><th class="t5-name">이름</th>
+      <th>월</th><th>화</th><th>수</th><th>목</th><th>금</th></tr></thead><tbody>`;
+
+  groups.forEach(grp => {
+    // 전도자 줄 (이름만)
+    html += `<tr class="t5-host-row"><td class="t5-name t5-host">${grp.host} <span class="t5-badge">${grp.team}팀</span></td><td colspan="5"></td></tr>`;
+    // 신규 줄 (참석 체크)
+    grp.members.forEach(m => {
+      const arr = team5Attend[m.key] || [false,false,false,false,false];
+      html += `<tr class="t5-member-row"><td class="t5-name t5-member">↳ ${m.name}</td>`;
+      for (let di = 0; di < 5; di++) {
+        const on = arr[di];
+        html += `<td><button class="t5-check${on ? ' on' : ''}" data-key="${m.key}" data-di="${di}">${on ? '✓' : ''}</button></td>`;
+      }
+      html += `</tr>`;
+    });
+  });
+  html += `</tbody></table>`;
+  wrap.innerHTML = html;
+
+  // 체크 이벤트 연결
+  wrap.querySelectorAll('.t5-check').forEach(btn => {
+    btn.onclick = () => {
+      const key = btn.dataset.key;
+      const di = +btn.dataset.di;
+      if (!team5Attend[key]) team5Attend[key] = [false,false,false,false,false];
+      team5Attend[key][di] = !team5Attend[key][di];
+      saveTeam5();
+      renderTeam5();
+    };
+  });
+}
 
 // 기도 명단: 참석 약속한 신규 전체 (요일별 카드)
 function renderPrayerList() {
