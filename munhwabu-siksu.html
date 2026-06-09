@@ -436,6 +436,11 @@
     border-color: var(--fruit);
     color: white;
   }
+  .t5-check.promised {
+    background: #e8f5e0;
+    border-color: #b8dca8;
+    color: #a8cc90;
+  }
   .t5-check:active { transform: scale(0.9); }
   @media (max-width: 600px) {
     .team5-table thead th, .team5-table td { padding: 7px 2px; font-size: 0.76rem; }
@@ -1084,9 +1089,13 @@ function renderTeam5() {
       const person = allData[m.team][m.group][m.idx];
       html += `<tr class="t5-member-row"><td class="t5-name t5-member">↳ ${m.name}</td>`;
       for (let di = 0; di < 5; di++) {
-        // attend: 2=실참석(체크 ON), 1=약속, 0=없음
-        const on = person.attend[di] === 2;
-        html += `<td><button class="t5-check${on ? ' on' : ''}" data-team="${m.team}" data-group="${m.group}" data-idx="${m.idx}" data-di="${di}">${on ? '✓' : ''}</button></td>`;
+        // attend: 2=실참석(진한 빨강), 1=약속(연한 초록), 0=없음
+        const v = person.attend[di] === true ? 1 : (person.attend[di] || 0);
+        let cls = 't5-check';
+        let mark = '';
+        if (v === 2) { cls += ' on'; mark = '✓'; }
+        else if (v === 1) { cls += ' promised'; mark = '○'; }
+        html += `<td><button class="${cls}" data-team="${m.team}" data-group="${m.group}" data-idx="${m.idx}" data-di="${di}">${mark}</button></td>`;
       }
       html += `</tr>`;
     });
