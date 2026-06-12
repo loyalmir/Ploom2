@@ -721,15 +721,23 @@
     background: var(--bg);
     border-radius: 10px;
     text-align: center;
-    padding: 10px 4px;
+    padding: 10px 2px;
+    min-width: 0;
+    overflow: hidden;
   }
   .dash-day-card.meal { background: var(--meal-light); }
   .dash-day-card.fruit { background: var(--fruit-light); }
   .dash-day-card .day { font-size: 0.7rem; color: var(--text-sub); margin-bottom: 3px; }
-  .dash-day-card .count { font-size: 1.4rem; font-weight: 700; color: var(--accent); line-height: 1; }
+  .dash-day-card .count {
+    font-size: clamp(0.85rem, 4.2vw, 1.4rem);
+    font-weight: 700;
+    color: var(--accent);
+    line-height: 1;
+    white-space: nowrap;
+  }
   .dash-day-card.meal .count { color: var(--meal); }
   .dash-day-card.fruit .count { color: var(--fruit); }
-  .dash-day-card .count .dc-slash { color: var(--text-sub); font-weight: 400; font-size: 0.9rem; margin: 0 1px; }
+  .dash-day-card .count .dc-slash { color: var(--text-sub); font-weight: 400; font-size: 0.85em; margin: 0 1px; }
   .dash-day-card .count .dc-real { color: #c83030; }
   .dash-meal-summary h3 .h3-hint { font-size: 0.66rem; font-weight: 500; color: var(--text-sub); }
   .dash-meal-summary h3 .dc-slash { color: var(--text-sub); margin: 0 1px; }
@@ -770,6 +778,7 @@
     #attendContent, #dashboardContent, #team5Content, #mainContent { display: none !important; }
     body.printing-attend #attendContent { display: block !important; }
     body.printing-dash #dashboardContent { display: block !important; }
+    body.printing-team5 #team5Content { display: block !important; }
     .prayer-day-btn { border: 1px solid #ccc !important; }
     .prayer-day-btn.active { background: var(--accent) !important; color: white !important; }
     * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
@@ -784,6 +793,17 @@
     body.printing-attend .prayer-table tfoot td { padding: 2px 4px; }
     body.printing-attend table { break-inside: auto; }
     body.printing-attend tr { break-inside: avoid; }
+
+    /* 기도 탭: 한 장에 압축 */
+    body.printing-team5 .prayer-header { font-size: 0.92rem; margin-bottom: 6px; }
+    body.printing-team5 .team5-table td,
+    body.printing-team5 .team5-table thead th { padding: 1.5px 4px; font-size: 0.68rem; }
+    body.printing-team5 .team5-table .t5-host { font-size: 0.74rem; }
+    body.printing-team5 .team5-table .t5-member { font-size: 0.7rem; }
+    body.printing-team5 .t5-daycount { font-size: 0.56rem; margin-top: 1px; }
+    body.printing-team5 .t5-check { width: 22px; height: 22px; font-size: 0.7rem; }
+    body.printing-team5 table { break-inside: auto; }
+    body.printing-team5 tr { break-inside: avoid; }
 
     /* 전체 탭: 한 장에 압축 */
     body.printing-dash .dash-team-card { padding: 8px 10px; break-inside: avoid; }
@@ -830,7 +850,9 @@
 
   <!-- 5팀 (전도자별 신규 참석) -->
   <div id="team5Content">
-    <div class="prayer-header">🙏 전도자별 신규 기도 명단</div>
+    <div class="prayer-header">🙏 전도자별 신규 기도 명단
+      <button class="pdf-btn" onclick="exportPDF('team5')">📄 PDF</button>
+    </div>
     <div id="team5Wrap"></div>
   </div>
 
